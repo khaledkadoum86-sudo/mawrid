@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1f3b2d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مورد الظمآن">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>مورد الظمآن</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f1e7; --paper:#fffdf8; --ink:#1d1b16; --muted:#6f6656; --line:#e4dccb;
+  --green:#1f3b2d; --green2:#2f5a44; --accent:#a3271f; --gold:#b98a2e; --hl:#fbeec2;
+  --chip:#efe7d6; --shadow:0 1px 2px rgba(60,40,10,.06),0 4px 14px rgba(60,40,10,.06);
+  --fs:21px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141612; --paper:#1c1f1a; --ink:#ece6d8; --muted:#a59d8b; --line:#2f332b;
+  --green:#7fb596; --green2:#9cc8ad; --accent:#ef7a6c; --gold:#d8b062; --hl:#4a3f1c; --chip:#272b24;
+  --shadow:none;
+}}
+:root[data-theme="dark"]{
+  --bg:#141612; --paper:#1c1f1a; --ink:#ece6d8; --muted:#a59d8b; --line:#2f332b;
+  --green:#7fb596; --green2:#9cc8ad; --accent:#ef7a6c; --gold:#d8b062; --hl:#4a3f1c; --chip:#272b24;
+  --shadow:none;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Noto Naskh Arabic","Geeza Pro",system-ui,sans-serif;font-size:16px;line-height:1.7;
+  padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;background:var(--green);color:#fff;
+  padding:calc(env(safe-area-inset-top) + 10px) 16px 12px}
+:root[data-theme="dark"] header{background:#10251a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header{background:#10251a}}
+.brand{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.brand h1{margin:0;font-family:Amiri,serif;font-size:26px;font-weight:700;letter-spacing:0}
+.brand small{opacity:.75;font-size:13px}
+.searchbox{margin-top:10px;position:relative}
+.searchbox input{width:100%;border:0;border-radius:12px;padding:12px 44px 12px 14px;font-size:18px;
+  font-family:inherit;background:#fffdf8;color:#1d1b16;outline:none}
+.searchbox .clr{position:absolute;left:8px;top:50%;transform:translateY(-50%);border:0;background:none;
+  font-size:20px;color:#888;padding:6px 8px;display:none}
+.searchbox .ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.5;pointer-events:none}
+main{max-width:860px;margin:0 auto;padding:14px 16px}
+.view{display:none}.view.on{display:block}
+nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:var(--paper);
+  border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;border:0;background:none;padding:9px 4px 8px;font-size:12.5px;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--green)}
+.hint{color:var(--muted);font-size:14px;margin:6px 2px 12px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);
+  padding:12px 14px 10px;margin:0 0 12px}
+.vhead{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:4px}
+.vnum{background:var(--green);color:#fff;border-radius:999px;min-width:30px;padding:0 8px;text-align:center;
+  font-weight:700;font-size:13px;line-height:24px}
+:root[data-theme="dark"] .vnum{color:#10251a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .vnum{color:#10251a}}
+.vsec{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vbtn{border:0;background:none;padding:4px 6px;color:var(--muted);border-radius:8px}
+.vbtn.on{color:var(--gold)}
+/* البيت: الصدر يمينًا والعجز يسارًا */
+.bayt{display:grid;grid-template-columns:1fr 1fr;column-gap:22px;font-family:Amiri,serif;font-size:var(--fs);
+  line-height:1.9;padding:4px 0 2px}
+.bayt .sadr{text-align:right}
+.bayt .ajz{text-align:left}
+.bayt.small{font-size:calc(var(--fs) - 3px)}
+.q{color:var(--accent)}
+.hit{background:var(--hl);border-radius:4px;box-shadow:0 0 0 2px var(--hl)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{border:0;background:var(--chip);border-radius:999px;padding:3px 11px;font-size:14px;color:var(--ink);
+  font-family:inherit}
+.chip.q{color:var(--accent)}
+.grp{font-weight:700;color:var(--green);margin:16px 2px 8px;font-size:15px}
+.rule{border-inline-start:4px solid var(--gold)}
+.rule p{margin:2px 0 6px;font-size:15px}
+.count{color:var(--muted);font-size:14px;margin:2px 2px 10px}
+.seg{display:flex;background:var(--chip);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:none;padding:8px 4px;border-radius:9px;font-size:15px;color:var(--muted)}
+.seg button.on{background:var(--paper);color:var(--ink);font-weight:700;box-shadow:var(--shadow)}
+details.sec{background:var(--paper);border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+details.sec>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:10px;align-items:center}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary .rng{font-size:12.5px;color:var(--muted);white-space:nowrap}
+details.sec>summary .tt{flex:1;font-weight:600}
+details.sec[open]>summary{border-bottom:1px solid var(--line)}
+.secbody{padding:6px 14px 4px}
+.row{border-bottom:1px dashed var(--line);padding:6px 0}
+.row:last-child{border-bottom:0}
+.row .vhead{margin:0}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.empty b{display:block;font-family:Amiri,serif;font-size:22px;color:var(--ink);margin-bottom:6px}
+.sheet{position:fixed;inset:0;z-index:50;display:none}
+.sheet.on{display:block}
+.sheet .bd{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+.sheet .pn{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);
+  border-radius:18px 18px 0 0;padding:10px 16px calc(18px + env(safe-area-inset-bottom));max-width:860px;margin:0 auto}
+.grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:2px auto 10px}
+.navrow{display:flex;gap:8px;margin-top:10px}
+.navrow button{flex:1;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px}
+.ctx .row{opacity:.6}
+.ctx .row.cur{opacity:1}
+.set{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:4px 14px;margin-bottom:12px}
+.set .it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.set .it:last-child{border-bottom:0}
+.set .it span{color:var(--muted);font-size:14px}
+.mini{display:flex;gap:6px}
+.mini button{border:1px solid var(--line);background:var(--bg);border-radius:9px;padding:4px 12px}
+.mini button.on{background:var(--green);color:#fff;border-color:var(--green)}
+.about{font-size:14.5px;color:var(--muted)}
+.about b{color:var(--ink)}
+.toast{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);
+  background:#222;color:#fff;padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:.2s;z-index:60;pointer-events:none}
+.toast.on{opacity:.92}
+@media (max-width:420px){
+  :root{--fs:17px}
+  .bayt{column-gap:12px}
+  main{padding:12px 12px}
+}
+@media (min-width:900px){ :root{--fs:23px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><h1>مورد الظمآن</h1><small>الرسم والضبط · رواية ورش</small></div>
+  <div class="searchbox">
+    <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f3b2d" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="q" type="search" placeholder="اكتب كلمة قرآنية…" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="clr" id="clr" aria-label="مسح">×</button>
+  </div>
+</header>
+
+<main>
+  <section class="view on" id="v-search">
+    <div id="results"></div>
+  </section>
+  <section class="view" id="v-browse">
+    <div class="seg" id="seg">
+      <button data-b="r" class="on">الرسم</button>
+      <button data-b="d">الضبط</button>
+      <button data-b="i">الإعلان</button>
+    </div>
+    <div id="browse"></div>
+  </section>
+  <section class="view" id="v-saved"><div id="saved"></div></section>
+  <section class="view" id="v-set"><div id="settings"></div></section>
+</main>
+
+<nav class="tabs" id="tabs">
+  <button data-v="search" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>البحث</button>
+  <button data-v="browse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h6a2 2 0 0 1 2 2v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-6a2 2 0 0 0-2 2v12a2 2 0 0 1 2-2h6z"/></svg>المتن</button>
+  <button data-v="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>المحفوظات</button>
+  <button data-v="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>الإعدادات</button>
+</nav>
+
+<div class="sheet" id="sheet"><div class="bd" id="sheetbd"></div><div class="pn" id="sheetpn"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const APP_VERSION = "1.0";
+const DATA = /*DATA*/null;
+
+// ---- normalization -------------------------------------------------------
+const HAR = /[ؐ-ًؚ-ٟۖ-ۭـ]/g;
+function A(s){ // imla'i-ish key: no diacritics, unified alef/hamza seats
+  return (s||"").replace(/ٰ/g,"ا").replace(HAR,"")
+    .replace(/[أإآٱ]/g,"ا").replace(/ؤ/g,"و").replace(/ئ/g,"ي").replace(/ء/g,"")
+    .replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[^ء-ي ]/g,"").replace(/\s+/g," ").trim();
+}
+function K(s){ return A(s).replace(/[اوي ]/g,""); } // consonantal skeleton
+function strips(w){ // word variants without proclitics
+  const out=new Set([w]); let cur=[w];
+  for(const re of [/^[وف](?=..)/, /^[بلك](?=..)/, /^ال(?=..)/, /^لل(?=..)/]){
+    const nx=[]; for(const c of cur){ const m=c.replace(re,""); if(m!==c){out.add(m);nx.push(m)} nx.push(c) } cur=nx;
+  }
+  return [...out];
+}
+
+// ---- verse model ---------------------------------------------------------
+// id: "m:12" (مورد/ذيل) or "i:7" (الإعلان)
+const V = [];
+DATA.m.forEach((r,i)=>V.push({id:"m:"+(i+1),bk:"m",n:i+1,s:r[0],a:r[1],w:r[2]}));
+DATA.i.forEach((r,i)=>V.push({id:"i:"+(i+1),bk:"i",n:i+1,s:r[0],a:r[1],w:r[2]}));
+const byId = Object.fromEntries(V.map(v=>[v.id,v]));
+function secOf(v){ const L = v.bk==="m"?DATA.sm:DATA.si; return L.find(x=>v.n>=x.s&&v.n<=x.e) }
+function bookName(v){ return v.bk==="i" ? "الإعلان" : (v.n>=455 ? "الذيل في الضبط" : "مورد الظمآن") }
+V.forEach(v=>{
+  v.txt = A(v.s+" "+v.a);
+  v.keys = v.w.map(w=>{ const a=A(w); const parts=a.includes(" ")?a.split(" ").filter(x=>x.length>=2).flatMap(strips):[]; return {w, a, k:K(w), v:strips(a), parts} });
+});
+
+// ---- search --------------------------------------------------------------
+function near(a,b,minLen,ratio){ // substring with enough overlap
+  const [s,l]=a.length<=b.length?[a,b]:[b,a];
+  return s.length>=minLen && l.includes(s) && s.length/l.length>=ratio;
+}
+function scoreWord(qv, qk, key){
+  let best=0;
+  for(const q of qv) for(const w of key.v){
+    if(q===w) best=Math.max(best, q===qv[0]&&w===key.v[0]?100:95);
+    else if(near(q,w,4,.6)) best=Math.max(best,50);
+  }
+  if(best<90) for(const q of qv) if(key.parts.includes(q)) best=Math.max(best,90); // كلمة من عبارة: «يدع» في «يوم يدع»
+  if(best<85){
+    if(qk.length>=2 && qk===key.k) best=Math.max(best, qk.length>=4?85:qk.length===3?70:50); // نفس الهيكل: الصلوة = الصلاة
+    else for(const q of qv){ const k=K(q);
+      for(const w of key.v){ const kw=K(w);
+        if(k.length>=3 && k===kw) best=Math.max(best,60);
+        else if(near(k,kw,4,.7)) best=Math.max(best,35);
+      }
+    }
+  }
+  return best;
+}
+function search(raw){
+  const qa=A(raw); if(!qa) return {hits:[],rules:[]};
+  const multi = qa.includes(" ");
+  const qv = strips(qa), qk=K(qa);
+  const hits=[];
+  for(const v of V){
+    let sc=0, matched=[];
+    for(const key of v.keys){ const s=scoreWord(qv,qk,key); if(s>0){ if(s>sc) sc=s; if(s>=40) matched.push(key.w) } }
+    if(qa.length>=3 && v.txt.includes(qa)) { sc=Math.max(sc, multi?90:30); }
+    if(sc>=30) hits.push({v,sc,matched});
+  }
+  hits.sort((a,b)=>b.sc-a.sc || (a.v.bk===b.v.bk?a.v.n-b.v.n:(a.v.bk==="m"?-1:1)));
+  return {hits:hits.slice(0,80), rules:rules(qa)};
+}
+// قواعد عامة قد تنطبق على الكلمة وإن لم تُذكر بعينها
+function rules(qa){
+  const w = strips(qa).sort((a,b)=>a.length-b.length)[0] || qa;
+  const out=[];
+  if(/ات$/.test(w) && w.length>=4) out.push({t:"إن كانت جمع مؤنث سالمًا", d:"يُحذف ألفه في الرسم إذا تكرّر، ما لم يكن مشدّدًا أو مهموزًا، وفي الجمع الذي فيه ألفان تفصيل.", r:["m:48","m:50","m:52","m:53"]});
+  if(/(ين|ون)$/.test(w) && w.length>=5 && /^.?.?ا/.test(w.replace(/^ال/,""))) out.push({t:"إن كانت جمع مذكر سالمًا", d:"حُذفت ألفه في الرسم حيث أتى، كالعالمين والصادقين، بالشرط المذكور.", r:["m:48","m:50","m:73"]});
+  if(/ان$/.test(w) && w.length>=5) out.push({t:"إن كانت مثنّى", d:"تُحذف ألف المثنّى إذا لم تكن في الطرف، كـ«رجلان» و«يحكمان».", r:["m:117"]});
+  if(/^(الل|لل)/.test(qa) && !/^الله/.test(qa)) out.push({t:"ما بين لامين", d:"تُحذف الألف إذا وقعت بين لامين.", r:["m:150"]});
+  if(/^(يا|ها)/.test(w) && w.length>=4) out.push({t:"ياء النداء وهاء التنبيه", d:"تُحذف الألف بعد «يا» النداء و«ها» التنبيه، كـ«هٰتين» و«يٰنساء».", r:["m:151"]});
+  return out;
+}
+
+// ---- rendering -----------------------------------------------------------
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function markHalf(text, v, qset){
+  return text.split(/(\s+)/).map(tok=>{
+    if(!tok.trim()) return tok;
+    const a=A(tok); if(!a) return esc(tok);
+    const tv=strips(a), tk=tv.map(K);
+    let isQ=false;
+    for(const key of v.keys){
+      for(const kw of key.a.split(" ")){ // multi-word keys mark each word
+        const ka=strips(kw), kk=ka.map(K);
+        if(tv.some(x=>ka.includes(x)) || (tk.some(x=>x.length>=2&&kk.includes(x)))) { isQ=true; break }
+      }
+      if(isQ) break;
+    }
+    let isHit=false;
+    if(qset) isHit = tv.some(x=>qset.a.includes(x)) || tk.some(x=>x.length>=4&&qset.k.includes(x));
+    let cls=(isQ?"q ":"")+(isHit?"hit":"");
+    return cls.trim()?`<span class="${cls.trim()}">${esc(tok)}</span>`:esc(tok);
+  }).join("");
+}
+function baytHTML(v,qset,small){
+  return `<div class="bayt${small?" small":""}"><div class="sadr">${markHalf(v.s,v,qset)}</div><div class="ajz">${markHalf(v.a,v,qset)}</div></div>`;
+}
+const BM = loadBM();
+function loadBM(){ try{ return new Set(JSON.parse(localStorage.getItem("mawrid.bm")||"[]")) }catch(e){ return new Set() } }
+function saveBM(){ try{ localStorage.setItem("mawrid.bm",JSON.stringify([...BM])) }catch(e){} }
+const ICON_BM = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M6 3h12v18l-6-4-6 4z"/></svg>`;
+const ICON_BM0 = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4z"/></svg>`;
+function numLabel(v){ return (v.bk==="i"?"إ ":"")+v.n }
+function card(v,qset,opts={}){
+  const s=secOf(v);
+  const chips = opts.chips && v.w.length ? `<div class="chips">${v.w.map(w=>`<button class="chip q" data-s="${esc(w)}">${esc(w)}</button>`).join("")}</div>` : "";
+  return `<div class="card" data-id="${v.id}">
+    <div class="vhead"><span class="vnum">${numLabel(v)}</span><span class="vsec">${esc(bookName(v))} · ${esc(s?s.t:"")}</span>
+    <button class="vbtn bm${BM.has(v.id)?" on":""}" data-bm="${v.id}" aria-label="حفظ">${BM.has(v.id)?ICON_BM:ICON_BM0}</button></div>
+    ${baytHTML(v,qset)}${chips}</div>`;
+}
+function qsetOf(raw){ const a=A(raw); if(!a) return null; const v=strips(a); return {a:v, k:v.map(K)} }
+
+function renderSearch(){
+  const raw=$("#q").value; const el=$("#results");
+  $("#clr").style.display = raw?"block":"none";
+  if(!A(raw)){
+    el.innerHTML = `<div class="empty"><b>ابحث عن كلمة قرآنية</b>اكتب الكلمة كما تعرفها، بالرسم الإملائي أو العثماني، فتظهر الأبيات التي ذكرتها من مورد الظمآن وذيل الضبط والإعلان، والكلمات القرآنية في البيت بالأحمر.</div>
+    <div class="grp">أمثلة</div><div class="chips">${["العالمين","الصلاة","لكيلا","رحمت","الشيطان","ءايات","مائة","إبراهيم","الربا","بأييد"].map(w=>`<button class="chip" data-s="${w}">${w}</button>`).join("")}</div>`;
+    return;
+  }
+  const {hits,rules:rl}=search(raw); const qs=qsetOf(raw);
+  const strong=hits.filter(h=>h.sc>=85), weak=hits.filter(h=>h.sc<85);
+  let h="";
+  if(!hits.length) h+=`<div class="empty"><b>لم أجد بيتًا يذكر هذه الكلمة بعينها</b>جرّب صيغة أخرى للكلمة (بلا «و» أو «ال»، أو مفردها).</div>`;
+  if(strong.length){ h+=`<div class="count">${strong.length} ${strong.length===1?"بيت يذكر":"أبيات تذكر"} الكلمة</div>`; h+=strong.map(x=>card(x.v,qs,{chips:true})).join("") }
+  if(rl.length){ h+=`<div class="grp">قواعد عامة قد تنطبق على الكلمة</div>`;
+    h+=rl.map(r=>`<div class="card rule"><p><b>${r.t}</b>: ${r.d}</p>${r.r.map(id=>`<div class="row" data-id="${id}"><div class="vhead"><span class="vnum">${numLabel(byId[id])}</span></div>${baytHTML(byId[id],null,true)}</div>`).join("")}</div>`).join("") }
+  if(weak.length){ h+=`<div class="grp">${strong.length?"أبيات قريبة":"أبيات قد تتعلّق بالكلمة"}</div>`; h+=weak.map(x=>card(x.v,qs,{chips:true})).join("") }
+  el.innerHTML=h;
+}
+
+function renderBrowse(){
+  const b=state.book;
+  const L = b==="i" ? DATA.si : DATA.sm.filter(s=> b==="d" ? s.s>=455 : s.s<455);
+  const bk = b==="i"?"i":"m";
+  $("#browse").innerHTML = L.map((s,k)=>`<details class="sec" data-k="${k}"><summary><span class="tt">${esc(s.t)}</span><span class="rng">${s.s}–${s.e}</span></summary><div class="secbody" data-bk="${bk}" data-s="${s.s}" data-e="${s.e}"></div></details>`).join("");
+}
+function fillSec(div){
+  if(div.dataset.f) return; div.dataset.f=1;
+  const bk=div.dataset.bk, s=+div.dataset.s, e=+div.dataset.e; let h="";
+  for(let n=s;n<=e;n++){ const v=byId[bk+":"+n];
+    h+=`<div class="row" data-id="${v.id}"><div class="vhead"><span class="vnum">${numLabel(v)}</span><span class="vsec"></span>
+    <button class="vbtn bm${BM.has(v.id)?" on":""}" data-bm="${v.id}" aria-label="حفظ">${BM.has(v.id)?ICON_BM:ICON_BM0}</button></div>${baytHTML(v)}</div>` }
+  div.innerHTML=h;
+}
+function renderSaved(){
+  const ids=[...BM].filter(id=>byId[id]).sort((a,b)=>{const x=byId[a],y=byId[b];return x.bk===y.bk?x.n-y.n:(x.bk==="m"?-1:1)});
+  $("#saved").innerHTML = ids.length ? ids.map(id=>card(byId[id],null,{chips:true})).join("")
+   : `<div class="empty"><b>لا محفوظات بعد</b>اضغط علامة الحفظ بجانب أي بيت ليظهر هنا.</div>`;
+}
+function renderSettings(){
+  const fs=state.fs, th=state.theme;
+  $("#settings").innerHTML=`
+  <div class="set">
+    <div class="it"><div>حجم خط الأبيات</div><div class="mini" id="fsb">${[["s","صغير"],["m","متوسط"],["l","كبير"]].map(([k,t])=>`<button data-fs="${k}" class="${fs===k?"on":""}">${t}</button>`).join("")}</div></div>
+    <div class="it"><div>المظهر</div><div class="mini" id="thb">${[["auto","تلقائي"],["light","فاتح"],["dark","داكن"]].map(([k,t])=>`<button data-th="${k}" class="${th===k?"on":""}">${t}</button>`).join("")}</div></div>
+    <div class="it"><div>الإصدار</div><span>${APP_VERSION}</span></div>
+  </div>
+  <div class="set about"><p><b>المحتوى:</b> «مورد الظمآن في رسم أحرف القرآن» و«الذيل في الضبط» لأبي عبد الله محمد بن محمد الشريشي الخرّاز (ت 718هـ)، 608 أبيات؛ و«الإعلان بتكميل مورد الظمآن» لابن عاشر (ت 1040هـ)، 46 بيتًا.</p>
+  <p><b>مصدر النص:</b> ملف «مذكرة شرح مورد الظمآن»، مقابَلًا بتحقيق د. أشرف محمد فؤاد طلعت (مكتبة الإمام البخاري، ط2، 1434هـ)، وعلى ترقيمه. الكلمات القرآنية في الأبيات بالأحمر كما في تلك الطبعة.</p>
+  <p><b>البحث:</b> يبحث في فهرس الكلمات القرآنية المذكورة في كل بيت، ثم في نص الأبيات. لا يغني عن الرجوع إلى الشروح، خاصة في القواعد العامة التي لا يذكر الناظم كل كلماتها.</p></div>`;
+}
+
+// ---- verse sheet ---------------------------------------------------------
+function openVerse(id){
+  const v=byId[id]; if(!v) return; const s=secOf(v); const qs=qsetOf($("#q").value);
+  let ctx=""; for(let n=v.n-2;n<=v.n+2;n++){ const u=byId[v.bk+":"+n]; if(!u) continue;
+    ctx+=`<div class="row${n===v.n?" cur":""}" data-id="${u.id}"><div class="vhead"><span class="vnum">${numLabel(u)}</span></div>${baytHTML(u,n===v.n?qs:null,n!==v.n)}</div>` }
+  $("#sheetpn").innerHTML=`<div class="grab"></div><button class="vbtn" data-close style="float:left;font-size:22px;line-height:1;margin-top:-4px" aria-label="إغلاق">×</button>
+   <div class="vhead"><span class="vsec">${esc(bookName(v))} · ${esc(s?s.t:"")}</span>
+   <button class="vbtn bm${BM.has(v.id)?" on":""}" data-bm="${v.id}">${BM.has(v.id)?ICON_BM:ICON_BM0}</button>
+   <button class="vbtn" data-copy="${v.id}" aria-label="نسخ"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button></div>
+   <div class="card ctx">${ctx}</div>
+   ${v.w.length?`<div class="grp">الكلمات القرآنية في البيت</div><div class="chips">${v.w.map(w=>`<button class="chip q" data-s="${esc(w)}">${esc(w)}</button>`).join("")}</div>`:""}
+   <div class="navrow"><button data-go="${v.bk}:${v.n-1}" ${byId[v.bk+":"+(v.n-1)]?"":"disabled"}>→ البيت السابق</button><button data-go="${v.bk}:${v.n+1}" ${byId[v.bk+":"+(v.n+1)]?"":"disabled"}>البيت التالي ←</button></div>`;
+  $("#sheet").classList.add("on"); $("#sheetpn").scrollTop=0;
+}
+function closeSheet(){ $("#sheet").classList.remove("on") }
+
+// ---- state & events ------------------------------------------------------
+function $(s){return document.querySelector(s)}
+const state = Object.assign({view:"search",book:"r",fs:"m",theme:"auto"}, (()=>{try{return JSON.parse(localStorage.getItem("mawrid.ui")||"{}")}catch(e){return{}}})());
+function saveUI(){ try{ localStorage.setItem("mawrid.ui",JSON.stringify({book:state.book,fs:state.fs,theme:state.theme})) }catch(e){} }
+function applyUI(){
+  const r=document.documentElement;
+  if(state.theme==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",state.theme);
+  const base = matchMedia("(max-width:420px)").matches?17:(matchMedia("(min-width:900px)").matches?23:21);
+  r.style.setProperty("--fs",(base+({s:-2,m:0,l:3}[state.fs]||0))+"px");
+}
+function show(view){
+  state.view=view;
+  document.querySelectorAll(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+view));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.v===view));
+  if(view==="saved") renderSaved();
+  if(view==="set") renderSettings();
+  if(view==="browse" && !$("#browse").innerHTML) renderBrowse();
+  scrollTo(0,0);
+}
+function toast(t){ const e=$("#toast"); e.textContent=t; e.classList.add("on"); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove("on"),1400) }
+function doSearch(w){ $("#q").value=w; closeSheet(); show("search"); renderSearch(); }
+
+let deb; $("#q").addEventListener("input",()=>{ clearTimeout(deb); deb=setTimeout(()=>{ if(state.view!=="search") show("search"); renderSearch() },160) });
+$("#q").addEventListener("keydown",e=>{ if(e.key==="Enter") e.target.blur() });
+$("#clr").addEventListener("click",()=>{ $("#q").value=""; renderSearch(); $("#q").focus() });
+$("#tabs").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) show(b.dataset.v) });
+$("#seg").addEventListener("click",e=>{ const b=e.target.closest("button"); if(!b) return; state.book=b.dataset.b; saveUI();
+  document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x===b)); renderBrowse() });
+$("#browse").addEventListener("toggle",e=>{ if(e.target.open) fillSec(e.target.querySelector(".secbody")) },true);
+$("#sheetbd").addEventListener("click",closeSheet);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeSheet() });
+document.addEventListener("click",e=>{
+  const bm=e.target.closest("[data-bm]");
+  if(bm){ const id=bm.dataset.bm; if(BM.has(id)) BM.delete(id); else BM.add(id); saveBM();
+    document.querySelectorAll(`[data-bm="${id}"]`).forEach(x=>{x.classList.toggle("on",BM.has(id)); x.innerHTML=BM.has(id)?ICON_BM:ICON_BM0});
+    toast(BM.has(id)?"حُفظ البيت":"أُزيل من المحفوظات"); if(state.view==="saved"&&!$("#sheet").classList.contains("on")) renderSaved(); return }
+  const cp=e.target.closest("[data-copy]");
+  if(cp){ const v=byId[cp.dataset.copy]; const t=`${v.s}   ${v.a}\n— ${bookName(v)}، البيت ${v.n}`;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("نُسخ البيت"),()=>toast("تعذّر النسخ")); return }
+  if(e.target.closest("[data-close]")){ closeSheet(); return }
+  const ch=e.target.closest("[data-s]"); if(ch){ doSearch(ch.dataset.s); return }
+  const go=e.target.closest("[data-go]"); if(go){ if(!go.disabled) openVerse(go.dataset.go); return }
+  const fs=e.target.closest("[data-fs]"); if(fs){ state.fs=fs.dataset.fs; saveUI(); applyUI(); renderSettings(); return }
+  const th=e.target.closest("[data-th]"); if(th){ state.theme=th.dataset.th; saveUI(); applyUI(); renderSettings(); return }
+  if(e.target.closest("summary")) return;
+  const row=e.target.closest("[data-id]"); if(row){ openVerse(row.dataset.id) }
+});
+
+applyUI(); renderSearch();
+if(state.book!=="r") document.querySelectorAll("#seg button").forEach(x=>x.classList.toggle("on",x.dataset.b===state.book));
+if("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
