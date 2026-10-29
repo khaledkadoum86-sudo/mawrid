@@ -51,5 +51,7 @@ def secs(lst,total):
 data={'m':[[r[1],r[2],mi.get(int(r[0]),[])] for r in raw['mawrid']],
       'i':[[r[1],r[2],ii.get(int(r[0]),[])] for r in raw['ilan']],
       'sm':secs(secM,608),'si':secs(secI,46)}
+import os
+if os.path.exists('shuruh.json'): data['sh']=json.load(open('shuruh.json'))
 json.dump(data,open('data.json','w'),ensure_ascii=False,separators=(',',':'))
 print(len(open('data.json').read()), sum(1 for v in data['m'] if v[2]), sum(len(v[2]) for v in data['m']))
