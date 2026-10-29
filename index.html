@@ -50,6 +50,18 @@ header{position:sticky;top:0;z-index:20;background:var(--green);color:#fff;
   font-family:Amiri,serif;font-weight:700;line-height:1}
 .fz button:active{background:rgba(255,255,255,.3)}
 .fz .s{font-size:15px}.fz .l{font-size:22px}
+.fz .b{font-size:18px;font-weight:400}
+:root.bold .fz .b{font-weight:700;background:rgba(255,255,255,.34)}
+/* الخط العريض الداكن */
+:root.bold{--ink:#0d0a06; --mink:#140d06; --muted:#4d4537}
+:root.bold body{font-weight:600}
+:root.bold .bayt{font-weight:700}
+:root.bold .aya .at,:root.bold .form .w{-webkit-text-stroke:.016em currentColor}
+:root.bold .vimg img{filter:url(#thk);opacity:1}
+@media (prefers-color-scheme:dark){:root.bold:not([data-theme="light"]){--ink:#f7f2e8; --mink:#f3ead6; --muted:#c2b9a5}
+ :root.bold:not([data-theme="light"]) .vimg img{filter:url(#thk) invert(.9) sepia(.2)}}
+:root.bold[data-theme="dark"]{--ink:#f7f2e8; --mink:#f3ead6; --muted:#c2b9a5}
+:root.bold[data-theme="dark"] .vimg img{filter:url(#thk) invert(.9) sepia(.2)}
 .searchbox{margin-top:10px;position:relative}
 .searchbox input{width:100%;border:0;border-radius:12px;padding:12px 44px 12px 14px;font-size:18px;
   font-family:inherit;background:#fffdf8;color:#1d1b16;outline:none}
@@ -199,7 +211,7 @@ details.sec[open]>summary{border-bottom:1px solid var(--line)}
 <body>
 <header>
   <div class="brand"><h1>مورد الظمآن</h1><small>الرسم والضبط · رواية ورش</small>
-    <div class="fz"><button class="s" data-fz="-1" aria-label="تصغير الخط">أ−</button><button class="l" data-fz="1" aria-label="تكبير الخط">أ+</button></div></div>
+    <div class="fz"><button class="s" data-fz="-1" aria-label="تصغير الخط">أ−</button><button class="l" data-fz="1" aria-label="تكبير الخط">أ+</button><button class="b" data-bold aria-label="خط عريض">ع</button></div></div>
   <div class="searchbox">
     <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1f3b2d" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
     <input id="q" type="search" placeholder="اكتب كلمة قرآنية…" autocomplete="off" autocorrect="off" spellcheck="false">
@@ -238,6 +250,7 @@ details.sec[open]>summary{border-bottom:1px solid var(--line)}
   <div class="vbot"><button id="vprev">→ السابقة</button><input id="vin" inputmode="numeric" aria-label="رقم الصفحة"><button id="vnext">التالية ←</button></div>
 </div>
 <div class="toast" id="toast"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="thk"><feMorphology operator="erode" radius="0.3"/></filter></svg>
 
 <script>
 const APP_VERSION = "2.0";
@@ -565,13 +578,14 @@ function closeSheet(){ $("#sheet").classList.remove("on") }
 function $(s){return document.querySelector(s)}
 const state = Object.assign({view:"search",book:"r",fs:"m",theme:"auto"}, (()=>{try{return JSON.parse(localStorage.getItem("mawrid.ui")||"{}")}catch(e){return{}}})());
 if(state.fz===undefined) state.fz={s:-2,l:3}[state.fs]||0; // ترحيل الإعداد القديم
-function saveUI(){ try{ localStorage.setItem("mawrid.ui",JSON.stringify({book:state.book,fz:state.fz,theme:state.theme})) }catch(e){} }
+function saveUI(){ try{ localStorage.setItem("mawrid.ui",JSON.stringify({book:state.book,fz:state.fz,theme:state.theme,bold:state.bold})) }catch(e){} }
 function applyUI(){
   const r=document.documentElement;
   if(state.theme==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",state.theme);
   const base = matchMedia("(max-width:420px)").matches?17:(matchMedia("(min-width:900px)").matches?23:21);
   r.style.setProperty("--fs",(base+state.fz*2)+"px");
   r.style.setProperty("--ui",(16+state.fz)+"px");
+  r.classList.toggle("bold", state.bold!==false);
 }
 function show(view){
   state.view=view;
@@ -606,6 +620,7 @@ document.addEventListener("click",e=>{
   const pg=e.target.closest("[data-pg]"); if(pg){ const [b,i,id]=pg.dataset.pg.split(/:(\d+):/); openPage(b,+i,id); return }
   const ch=e.target.closest("[data-s]"); if(ch){ doSearch(ch.dataset.s); return }
   const go=e.target.closest("[data-go]"); if(go){ if(!go.disabled) openVerse(go.dataset.go); return }
+  if(e.target.closest("[data-bold]")){ state.bold = state.bold===false; saveUI(); applyUI(); toast(state.bold!==false?"خط عريض":"خط عادي"); return }
   const fz=e.target.closest("[data-fz]"); if(fz){ const d=+fz.dataset.fz; state.fz = d===0?0:Math.max(-3,Math.min(8,state.fz+d)); saveUI(); applyUI();
     if(state.view==="set") { renderSettings(); fillDL(); } toast(state.fz===0?"الحجم الأصلي":(state.fz>0?"تكبير ":"تصغير ")+Math.abs(state.fz)); return }
   const th=e.target.closest("[data-th]"); if(th){ state.theme=th.dataset.th; saveUI(); applyUI(); renderSettings(); fillDL(); return }
