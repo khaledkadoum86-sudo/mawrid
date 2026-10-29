@@ -450,7 +450,7 @@ function renderSettings(){
     <div class="it"><div>الإصدار</div><span>${APP_VERSION}</span></div>
   </div>
   ${Object.keys(SH.books).length?`<div class="grp">الشروح دون إنترنت</div>`:""}
-  <div class="set"${Object.keys(SH.books).length?"":" hidden"}>${Object.entries(SH.books).map(([b,B])=>`<div class="dl"><div class="tx">${esc(B.t)}<span>${esc(B.a)} · ${B.n.toLocaleString("ar-EG")} صفحة · نحو ${B.mb} م.ب</span></div><button data-dl="${b}">تنزيل</button></div>`).join("")}</div>
+  <div class="set"${Object.keys(SH.books).length?"":" hidden"}>${Object.entries(SH.books).filter(([b,B])=>!B.nodl).map(([b,B])=>`<div class="dl"><div class="tx">${esc(B.t)}<span>${esc(B.a)} · ${B.n.toLocaleString("ar-EG")} صفحة · نحو ${B.mb} م.ب</span></div><button data-dl="${b}">تنزيل</button></div>`).join("")}</div>
   <div class="set about"><p><b>المحتوى:</b> «مورد الظمآن في رسم أحرف القرآن» و«الذيل في الضبط» لأبي عبد الله محمد بن محمد الشريشي الخرّاز (ت 718هـ)، 608 أبيات؛ و«الإعلان بتكميل مورد الظمآن» لابن عاشر (ت 1040هـ)، 46 بيتًا.</p>
   <p><b>مصدر النص:</b> ملف «مذكرة شرح مورد الظمآن»، مقابَلًا بتحقيق د. أشرف محمد فؤاد طلعت (مكتبة الإمام البخاري، ط2، 1434هـ)، وعلى ترقيمه. الكلمات القرآنية في الأبيات بالأحمر كما في تلك الطبعة.</p>
   ${Object.values(SH.books).map(B=>`<p><b>${esc(B.t)}:</b> ${esc(B.src)}</p>`).join("")}
