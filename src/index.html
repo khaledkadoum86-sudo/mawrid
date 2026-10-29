@@ -253,7 +253,11 @@ details.sec[open]>summary{border-bottom:1px solid var(--line)}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="thk"><feMorphology operator="erode" radius="0.3"/></filter></svg>
 
 <script>
-const APP_VERSION = "2.0";
+// إن تعطّل التطبيق في متصفح قديم تظهر رسالة بدل شاشة فارغة
+window.addEventListener("error",function(e){ try{ var d=document.getElementById("results"); if(d&&!d.innerHTML) d.innerHTML='<div class="empty"><b>تعذّر تشغيل التطبيق على هذا الجهاز</b>حدّث نظام الجهاز ومتصفح Safari ثم أعد المحاولة.<br><small style="direction:ltr;display:block">'+(e.message||"")+'</small></div>' }catch(_){} });
+</script>
+<script>
+const APP_VERSION = "2.1";
 const DATA = /*DATA*/null;
 
 // ---- normalization -------------------------------------------------------
@@ -537,7 +541,7 @@ function shuruhHTML(v){
   return `<div class="grp">الشروح</div><div class="shl">${ks.map(b=>{ const B=SH.books[b], [s,e,g0,g1]=m[b];
     const grp = g1>g0 ? `شرح الأبيات ${g0}–${g1}` : `شرح البيت ${g0}`;
     const ps=pr(b,s), pe=pr(b,e), ar=x=>x.toLocaleString("ar-EG");
-    const pg = (ps.t || "صفحة "+ar(s)) + (e>s ? " إلى "+ar(ps.t? (pe.n??e) : e) : "");
+    const pg = (ps.t || "صفحة "+ar(s)) + (e>s ? " إلى "+ar(ps.t? (pe.n!=null?pe.n:e) : e) : "");
     return `<button class="shb" data-pg="${b}:${s}:${v.id}"><span class="ic">${B.ic}</span><span class="tx"><b>${esc(B.t)}</b><span>${esc(B.a)} · ${grp} · ${pg}</span></span><span class="go">‹</span></button>` }).join("")}</div>
     <div class="shnote">تفتح صفحة الكتاب التي يبدأ فيها شرح البيت، وتقلّب منها إلى ما بعدها.</div>`;
 }
@@ -548,7 +552,7 @@ const VW = {b:null,i:0,from:null};
 function openPage(b,i,from){
   const B=SH.books[b]; i=Math.max(1,Math.min(B.n,i)); VW.b=b; VW.i=i; if(from!==undefined) VW.from=from;
   $("#vt").textContent=B.t; const p=pr(b,i); $("#vs").textContent= p.t ? p.t+"  ("+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG")+")" : "صفحة "+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG");
-  $("#vin").value=p.n??i;
+  $("#vin").value=(p.n!=null?p.n:i);
   const box=$("#vimg"); box.innerHTML=`<div class="ld">جارٍ تحميل الصفحة…</div>`;
   const img=new Image(); img.alt="صفحة "+i; img.decoding="async";
   img.onload=()=>{ if(VW.b===b&&VW.i===i){ box.innerHTML=""; box.appendChild(img); box.scrollTop=0; box.scrollLeft=box.scrollWidth } };

@@ -1,4 +1,4 @@
-const CACHE = "mawrid-v2";
+const CACHE = "mawrid-v3";
 const PAGES = "mawrid-pages"; // صور صفحات الشروح: لا تُحذف عند التحديث
 const CORE = ["./","index.html","quran.json","warsh.woff2","manifest.webmanifest","icon-180.png","icon-192.png","icon-512.png"];
 self.addEventListener("install", e => {
