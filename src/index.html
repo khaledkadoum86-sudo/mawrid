@@ -163,6 +163,24 @@ details.sec[open]>summary{border-bottom:1px solid var(--line)}
 .aya .at{font-family:Warsh,Amiri,serif;font-size:calc(var(--fs) + 6px);line-height:2.5;text-align:justify;color:var(--mink);word-spacing:2px}
 .aya .at .hit{color:var(--accent);background:none;box-shadow:none;border-bottom:2px solid var(--accent);padding-bottom:2px}
 .aya .ar{font-size:12.5px;color:var(--muted)}
+/* ---- الهمز في الكلمة ---- */
+.hz{background:var(--paper);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:12px 14px;margin:0 0 14px;border-top:4px solid var(--gold)}
+.hz h3{margin:0 0 6px;font-size:15px;color:var(--ink);font-weight:700}
+.hz h3 .w{font-family:Warsh,Amiri,serif;font-size:calc(var(--fs) + 8px);color:var(--accent);font-weight:400}
+.hzg{font-weight:700;color:var(--green);font-size:14px;margin:10px 0 4px;display:flex;gap:8px;align-items:baseline}
+.hzg small{color:var(--muted);font-weight:400;font-size:12.5px}
+details.hzi{border-top:1px solid var(--line);padding:8px 0}
+details.hzi>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+details.hzi>summary::-webkit-details-marker{display:none}
+details.hzi>summary b{font-size:15px;color:var(--ink)}
+details.hzi>summary span{font-size:14.5px;color:var(--ink);opacity:.85;line-height:1.7}
+details.hzi>summary em{font-style:normal;font-size:14px;color:var(--accent);font-weight:700}
+details.hzi>summary i{font-style:normal;font-size:12.5px;color:var(--green)}
+details.hzi>summary i:before{content:"▸ "}
+details.hzi[open]>summary i:before{content:"▾ "}
+details.hzi .row{margin-top:6px;border-inline-start:3px solid var(--gold);padding-inline-start:8px}
+.aya .qw{cursor:pointer;border-radius:4px}
+.aya .qw:active{background:var(--hl)}
 .more{width:100%;border:1px solid var(--mline);background:transparent;border-radius:10px;padding:8px;margin-top:6px;color:var(--green)}
 .sep{display:flex;align-items:center;gap:10px;color:var(--green);font-weight:700;margin:4px 2px 10px;font-size:15px}
 .sep:after{content:"";flex:1;border-top:1px solid var(--line)}
@@ -257,14 +275,17 @@ details.sec[open]>summary{border-bottom:1px solid var(--line)}
 window.addEventListener("error",function(e){ try{ var d=document.getElementById("results"); if(d&&!d.innerHTML) d.innerHTML='<div class="empty"><b>تعذّر تشغيل التطبيق على هذا الجهاز</b>حدّث نظام الجهاز ومتصفح Safari ثم أعد المحاولة.<br><small style="direction:ltr;display:block">'+(e.message||"")+'</small></div>' }catch(_){} });
 </script>
 <script>
-const APP_VERSION = "2.1";
+const APP_VERSION = "2.2";
 const DATA = /*DATA*/null;
 
 // ---- normalization -------------------------------------------------------
 const HAR = /[ؐ-ًؚ-ٟۖ-ۭـ]/g;
+// ي+ٔ ← ئ كما في بعض كلمات المصحف (مِاْئَة). لا نستعمل NFC لأنه يجعل «آ» (ألف المد) «آ» فتُحسب همزة
+const NF = s=>(s||"").replace(/ئ/g,"ئ").replace(/ؤ/g,"ؤ").replace(/ۓ/g,"ۓ").replace(/أ/g,"أ").replace(/إ/g,"إ")
+  .replace(/ء([ًٌٍَُِّْ]*)(?:آ|آ)/g,"ء$1أ"); // ءَآنتم: الآ هنا صورة الهمزة الثانية (أأنتم)
 function A(s){ // imla'i-ish key: no diacritics, unified alef/hamza seats
-  return (s||"").replace(/ٰ/g,"ا").replace(HAR,"")
-    .replace(/ے/g,"ي").replace(/[أإآٱ]/g,"ا").replace(/ؤ/g,"و").replace(/ئ/g,"ي").replace(/ء/g,"")
+  return NF(s).replace(/ٰ/g,"ا").replace(HAR,"")
+    .replace(/ۓ/g,"ي").replace(/ے/g,"ي").replace(/[أإآٱ]/g,"ا").replace(/ؤ/g,"و").replace(/ئ/g,"ي").replace(/ء/g,"")
     .replace(/ة/g,"ه").replace(/ى/g,"ي").replace(/[^ء-ي ]/g,"").replace(/\s+/g," ").trim();
 }
 function K(s){ return A(s).replace(/[اوي ]/g,""); } // consonantal skeleton
@@ -296,8 +317,11 @@ function loadQ(){
   if(Q.loading) return Q.loading;
   Q.loading = fetch("quran.json").then(r=>r.json()).then(d=>{
     Q.data=d; Q.tok=d.a.map(r=>r[2].split(" ").map(t=>{ const a=A(t), r=A(t.replace(/ٰ/g,"")), m=A(t.replace(/و([ًَ-ْ]*)ٰ/g,"ا$1")); // m: الإملائي (الصلوٰة ← الصلاة)
-    const vs0=a?[...strips(a),...strips(r),...strips(m)]:[]; const vs=[...new Set(vs0.concat(vs0.filter(x=>/^لل./.test(x)).map(x=>"ا"+x.slice(1))))]; const hf=[...new Set([H(t),H(t.replace(/ٰ/g,"")),H(t.replace(/و([ًَ-ْ]*)ٰ/g,"ا$1"))])].filter(Boolean); const hv0=hf.flatMap(strips); const hv=[...new Set(hv0.concat(hv0.filter(x=>/^لل./.test(x)).map(x=>"ا"+x.slice(1))))];
-    return {a, full:[a,r,m], vs, hf, hv, hsk:hv.map(SK)} }));
+    // الهمز المتطرف المرسوم واوًا بعدها ألف زائدة (العلمٰؤا، يبدؤا، تفتؤا) يُكتب إملائيًا «العلماء، يبدأ، تفتأ»
+    const wa=/ؤ[ُ]?ا[ْ۟]?(?=[^ء-يٱ-ۓ]*$)/.test(t)?[A(t.replace(/ؤ[ُ]?ا[ْ۟]?(?=[^ء-يٱ-ۓ]*$)/,"ء")),A(t.replace(/ؤ[ُ]?ا[ْ۟]?(?=[^ء-يٱ-ۓ]*$)/,"أ"))]:[];
+    const vs0=a?[...strips(a),...strips(r),...strips(m),...wa.flatMap(strips)]:[]; const vs=[...new Set(vs0.concat(vs0.filter(x=>/^لل./.test(x)).map(x=>"ا"+x.slice(1))))]; const hf=[...new Set([H(t),H(t.replace(/ٰ/g,"ا")),H(t.replace(/و([ًَ-ْ]*)ٰ/g,"ا$1")),...(wa.length?[H(t.replace(/ؤ[ُ]?ا[ْ۟]?(?=[^ء-يٱ-ۓ]*$)/,"ء"))]:[])])].filter(Boolean); const hv0=hf.flatMap(strips); const hv=[...new Set(hv0.concat(hv0.filter(x=>/^لل./.test(x)).map(x=>"ا"+x.slice(1))))];
+    const h2=[...new Set([H2(t),H2(t.replace(/ٰ/g,"ا"))])]; const h2v=[...new Set(h2.flatMap(x=>strips(x).concat(strips(x).map(y=>y.replace(/^ء/,"أ")))))];
+    return {a, full:[a,r,m,...wa], vs, hf, hv, hsk:hv.map(SK), h2v, hc:(h2[0].match(/[أإؤئء]/g)||[]).length} }));
     if(state.view==="search") renderSearch();
   }).catch(()=>{ Q.loading=null });
   return Q.loading;
@@ -306,8 +330,13 @@ function loadQ(){
 // ---- مطابقة الكتابة الإملائية بالرسم ----
 // H: صورة الكلمة بحروفها، والهمز كله «ء»، لمقارنة الإملاء بالرسم حرفًا حرفًا
 function H(s){
-  return (s||"").replace(/[ٕٔ]/g,"ء").replace(HAR,"").replace(/ے/g,"ي").replace(/آ/g,"ءا").replace(/[أإؤئ]/g,"ء").replace(/ٱ/g,"ا")
+  return NF(s).replace(/[ٕٔ]/g,"ء").replace(HAR,"").replace(/ۓ/g,"ء").replace(/ے/g,"ي").replace(/آ/g,"ءا").replace(/[أإؤئ]/g,"ء").replace(/ٱ/g,"ا")
     .replace(/ة/g,"ه").replace(/[^ء-ي]/g,"");
+}
+// H2: مثل H لكنه يحفظ كرسي الهمزة (سئل ≠ سأل)، والهمزة في أول الكلمة ألفٌ (ءامنتم = آمنتم)
+function H2(s){
+  return NF(s).replace(/[ٕٔ]/g,"ء").replace(HAR,"").replace(/ے/g,"ي").replace(/ۓ/g,"ئ").replace(/آ/g,"أا").replace(/ٱ/g,"ا")
+    .replace(/[^ء-ي]/g,"").replace(/^ء/,"أ").replace(/^([وفبلكس]{1,2})ء/,"$1أ");
 }
 const SK = s=>s.replace(/[اويىء]/g,"").replace(/ه$/,"ت");
 // الفروق المقبولة بين الإملاء والرسم: زيادة الألف أو الهمزة أو حذفهما، والألف واوًا أو ياءً (الصلوٰة، موسىٰ)،
@@ -336,29 +365,181 @@ function ed(s,t,cap){
   }
   return prev[m];
 }
-function findQ(raw){
+// هل اللفظ في المصحف هو ما كتبه المستخدم بعد إبدال ورش همزته حرف مدّ من جنس حركة ما قبلها؟ (فأتوا = فَاتُواْ، سئل ≠ السَّيْل)
+function ibdalOK(tok, q){
+  const U=hzUnits(tok); const L=U.map(u=>u.c==="ۓ"?"ئ":u.c==="ے"?"ي":u.c==="ٱ"?"ا":u.c);
+  const MAD={"أ":["ا","f"],"ؤ":["و","d"],"ئ":["ي","k"]};
+  for(let s=0;s<=3&&s<L.length;s++){ if(L.length-s!==q.length) continue; let ok=true, sub=0;
+    for(let i=0;i<q.length&&ok;i++){ const a=q[i], b=L[s+i]; if(a===b) continue;
+      const m=MAD[a]; if(m && b===m[0] && i+s>0 && hzVow(U[s+i-1].m)===m[1]){ sub++; continue } ok=false }
+    if(ok&&sub) return true }
+  return false;
+}
+const FQC={raw:null,r:null};
+function findQ(raw){ if(FQC.raw===raw && FQC.tok===Q.tok) return FQC.r; const r=findQ0(raw); FQC.raw=raw; FQC.tok=Q.tok; FQC.r=r; return r }
+function findQ0(raw){
   const qa=A(raw).replace(/ /g,""); if(!qa||!Q.tok) return null;
   const qv=strips(qa), qh=H(raw), qhv=strips(qh), qsk=SK(qh), qskv=qhv.map(SK);
   const cap = Math.min(...qhv.map(x=>x.length)) <= 6 ? 1 : 2; // كلمة قصيرة: فرق واحد فقط
   const fz=(x,q)=> ed(x,q,cap)<=cap;
   const hits=[], seen=new Set();
-  const add=(i,j,j2,key,ex)=>{ const id=i+":"+j; if(seen.has(id)) return; seen.add(id); hits.push([i,j,j2,key,ex]) };
+  const add=(i,j,j2,key,ex,tier,d)=>{ const id=i+":"+j; if(seen.has(id)) return; seen.add(id); hits.push([i,j,j2,key,ex,tier,d||0]) };
+  const qv3=qv.filter(x=>x===qa||x.length>=3);
+  let qa0=/[ئؤ]/.test(NF(raw))?A(NF(raw).replace(/[ئؤ]/g,"")).replace(/ /g,""):""; if(qa0&&qa0.length<3) qa0="";
+  const qhz=/ء/.test(qh), qh2=H2(raw.trim().split(/\s+/).join("")), qhc=(qh2.match(/[أإؤئء]/g)||[]).length; // «الآن» لا تُطابق «إنّ» بعد نزع «ال»
   Q.tok.forEach((ts,i)=>ts.forEach((t,j)=>{
     if(!t.a) return;
     // 1) مطابقة تامة: الكلمة كما كُتبت، أو بعد نزع «و/ف/ب/ل/ك/ال»
-    if(t.vs.includes(qa) || t.full.some(x=>qv.includes(x))) return add(i,j,j,t.a,1);
+    // الأعلى: الكلمة بحروفها وهمزاتها كما كتبها المستخدم
+    if(qhz && t.h2v.includes(qh2)) return add(i,j,j,t.a,1,4);
+    const dh=Math.abs(t.hc-qhc); // أقرب في عدد الهمزات أولًا (برآء: بُرَءَٰٓؤُاْ قبل وَبَرّاً)
+    if(t.vs.includes(qa)) return add(i,j,j,t.a,1, qhz&&ibdalOK(Q.data.a[i][2].split(" ")[j],qh2)?4:3, dh);
+    if(qa0 && t.vs.includes(qa0)) return add(i,j,j,t.a,1,3,dh);
+    if(t.full.some(x=>qv3.includes(x))) return add(i,j,j,t.a,1,2,dh);
     // 2) مكتوبة إملائيًا: يختلف الرسم في الألف أو الهمز أو حروف المد أو التاء فقط
-    if(t.hv.some((x,k)=>t.hsk[k]===qsk && fz(x,qh)) || t.hf.some(x=>{ const sk=SK(x); return qhv.some((q,k)=>qskv[k]===sk && fz(x,q)) })) add(i,j,j,t.a,0);
+    { let d=99; t.hv.forEach((x,k)=>{ if(t.hsk[k]===qsk) d=Math.min(d,ed(x,qh,cap)) }); t.hf.forEach(x=>{ const sk=SK(x); qhv.forEach((q,k)=>{ if(qskv[k]===sk) d=Math.min(d,ed(x,q,cap)) }) });
+      if(d<=cap) add(i,j,j,t.a,0,1,d) }
   }));
   // 3) ما يُكتب كلمة واحدة في أحدهما وكلمتين في الآخر (يبنؤم، لكيلا…): كل كلمتين متتاليتين
   if((!hits.length || /\s/.test(raw.trim())) && qa.length>=4) Q.tok.forEach((ts,i)=>{ for(let j=0;j+1<ts.length;j++){ const a=ts[j].a+ts[j+1].a; if(!a) continue;
       const hh=ts[j].hf[0]+ts[j+1].hf[0];
-      if(strips(a).includes(qa)||qv.includes(a)||(SK(hh)===qsk&&fz(hh,qh))) add(i,j,j+1,ts[j].a+" "+ts[j+1].a,1) } });
+      if(strips(a).includes(qa)||qv.includes(a)||(SK(hh)===qsk&&fz(hh,qh))) add(i,j,j+1,ts[j].a+" "+ts[j+1].a,1,2) } });
+  { const top=Math.max(0,...hits.map(x=>x[5])); for(let k=hits.length-1;k>=0;k--) if(hits[k][5]<top) hits.splice(k,1) }
   hits.sort((x,y)=>x[0]-y[0]||x[1]-y[1]);
   const forms=new Map();
-  for(const [i,j,j2,key,ex] of hits){ const ws=Q.data.a[i][2].split(" ").slice(j,j2+1).map(w=>w.split(" ")[0].replace(/[ۖ-ۜ۞۩]/g,"")).join(" ");
-    if(!forms.has(key)) forms.set(key,{w:ws,key,n:0,ex}); forms.get(key).n++ }
-  return {hits, forms:[...forms.values()].sort((x,y)=>y.ex-x.ex||y.n-x.n), loose:!hits.some(x=>x[4])};
+  for(const [i,j,j2,key,ex,tier,d] of hits){ const ws=Q.data.a[i][2].split(" ").slice(j,j2+1).map(w=>w.split(" ")[0].replace(/[ۖ-ۜ۞۩]/g,"")).join(" ");
+    if(!forms.has(key)) forms.set(key,{w:ws,key,n:0,ex,d}); const fo=forms.get(key); fo.n++; fo.d=Math.min(fo.d,d) }
+  return {hits, forms:[...forms.values()].sort((x,y)=>y.ex-x.ex||x.d-y.d||y.n-x.n), loose:!hits.some(x=>x[4])};
+}
+// ---- تحليل الهمز في الكلمة ----------------------------------------------
+// يقرأ الكلمة كما رُسمت في المصحف (رواية ورش، بضبطها) فيعرف لكل همزة: موضعها، وحركتها، وما قبلها، وصورتها،
+// ثم يدلّ على أبيات «أحكام رسم الهمز» من المورد و«ضبط الهمز» من الذيل التي تحكمها.
+const HZ_V={"َ":"f","ً":"f","ٗ":"f","ُ":"d","ٌ":"d","ٞ":"d","ِ":"k","ٍ":"k","ٖ":"k"};
+function hzUnits(w){ // الكلمة حروفًا، لكل حرف علاماته
+  const s=NF(w).replace(/[ۖ-ۜ۞۩ ٠-٩]/g,"").replace(/آ/g,"آ");
+  const U=[];
+  for(const c of s){
+    if(/[ء-يٱ-ۓـ]/.test(c)){ U.push({c,m:""}); continue }
+    if(!U.length) continue;
+    const u=U[U.length-1];
+    // همزة فوق الألف الخنجرية أو فوق حرف (ادّٰرَٰٔتم): همزة بلا صورة بعد ذلك الحرف
+    if((c==="ٔ"||c==="ٕ") && !/[ـاأإ]/.test(u.c)){ U.push({c:"ء",m:"",v:1}); continue }
+    u.m+=c;
+  }
+  return U.filter(u=>u.c!=="ـ"||/[ٕٔ]/.test(u.m)).map(u=>u.c==="ـ"?{c:"ء",m:u.m.replace(/[ٕٔ]/g,""),t:1}:u);
+}
+const hzVow=m=>{ for(const c of m) if(HZ_V[c]) return HZ_V[c]; return /[ْۡ]/.test(m)?"s":"" };
+const HZSEAT={"أ":"ا","إ":"ا","آ":"ا","ؤ":"و","ئ":"ي","ۓ":"ي","ء":""};
+function hamzaInfo(w, raw){
+  const U=hzUnits(w); if(!U.length) return null;
+  const isHz=u=>u.c in HZSEAT;
+  const zayd=u=>/۟/.test(u.m)||(u.c==="ا"&&/[ْ]/.test(u.m)&&!isHz(u)); // ألف أو واو زائدة رسمًا (العلمٰؤاْ)
+  // السوابق: و ف ب ل ك س، وأل
+  const PV={"و":"f","ف":"f","ك":"f","ب":"k","ل":"fk","س":"f"};
+  // الشدّة على السابقة من إدغام ما قبلها (وَّإن، لِّأيمانكم) فلا تمنع كونها سابقة
+  let p=0;
+  // يا النداء وها التنبيه الموصولتان: يٰٓأيها، هٰٓأنتم، هٰٓؤلاء
+  if(U.length>2 && /[يه]/.test(U[0].c) && /ٰ/.test(U[0].m) && U[1].c in HZSEAT) p=1;
+  while(p<U.length-1 && p<3 && PV[U[p].c] && PV[U[p].c].includes(hzVow(U[p].m)||"-")){
+    if(U[p].c==="س"){ const rest=A(U.slice(p+2).map(x=>x.c).join("")); if(!(U[p+1]&&U[p+1].c in HZSEAT && /^(لقي|صرف|وريكم|ريكم|رهقه|صليه|نزل|تلو|ستغفر|تيكم|اتيكم)/.test(rest))) break }
+    p++ }
+  let art=false;
+  if(U[p]&&/[اٱ]/.test(U[p].c)&&U[p+1]&&U[p+1].c==="ل"&&U[p+2]){ art=true }
+  const F=[]; const add=(k,o)=>{ if(!F.some(x=>x.k===k)) F.push(Object.assign({k},o)) };
+  let nh=0;
+  // ورش ونقل حركة الهمزة إلى لام التعريف: اَ۬لَارض
+  if(art && /[fdk]/.test(hzVow(U[p+1].m)) && U[p+2] && (U[p+2].c==="ا"||/ٰ/.test(U[p+1].m))){ nh++; add("init",{}); add("naql",{}) }
+  for(let i=0;i<U.length;i++){ const u=U[i]; if(!isHz(u)) continue; nh++;
+    const seat=HZSEAT[u.c]; const own=hzVow(u.m);
+    let j=i-1; while(j>=0&&zayd(U[j])) j--;
+    const pr=j>=0?U[j]:null;
+    let k=i+1; while(k<U.length&&zayd(U[k])&&!(U[k].c==="ا"&&/[ًٗ]/.test(U[k].m))) k++;
+    const rest=U.slice(i+1).filter(x=>!zayd(x)&&!(x.c==="ا"&&/[ًٗ]/.test(x.m))&&!(x.c==="ا"&&!x.m&&k>=U.length-1));
+    const nx=U[i+1]||null;
+    const final=!rest.length || (rest.length===1&&rest[0].c==="ا"&&!rest[0].m);
+    const initial = i===p || (art&&i===p+2) || (i<=p && i===0);
+    // ما قبلها
+    let before="";
+    if(pr){ const v=hzVow(pr.m);
+      if(/ٰ/.test(pr.m) && !v) before="alif";
+      else if(/ٰ/.test(pr.m) && /[ٓ]/.test(pr.m)) before="alif";
+      else if(pr.c==="ا"&&!isHz(pr)&&!v) before="alif";
+      else if(v==="s") before="sukun";
+      else if(/[ويے]/.test(pr.c) && !v) before="sukun"; // حرف مدّ: شےْء، النبےٓء، سوٓء
+      else before=v||"";
+    }
+    // اجتماع همزتين في كلمة: ءَآنتم، ءَآلهة، أئمة (لا: بُرَءَٰٓؤُاْ، فبينهما ألف)
+    const pairPrev = pr && isHz(pr) && pr===U[i-1] && !/ٰ/.test(pr.m);
+    if(pairPrev || (nx && isHz(nx) && !/ٰ/.test(u.m))) { add("two",{}); add("twoImg",{}) }
+    if(pairPrev) continue; // الثانية تتبع الأولى في الصورة
+    const exp={f:"ا",d:"و",k:"ي"};
+    const same=(sv)=>{ const nxc=nx&&nx.c; return sv && nxc && (nxc===sv || (sv==="ي"&&nxc==="ے")) };
+    const dag=/ٰ/.test(u.m); // بعدها ألف خنجرية: صورتها حُذفت لئلا تجتمع ألفان
+    if(initial){ add("init",{seat}); if(!seat){ add("noseat",{}); if(same("ا")||dag) add("twoImg",{}) } continue }
+    if(final && seat==="و" && U.slice(i+1).some(x=>x.c==="ا"&&!/[ًٗ]/.test(x.m))) { add("wawAlif",{}); continue }
+    if(before==="alif"){ if(final) add("afterAlifEnd",{seat}); else add("afterAlif",{seat,own}); if(!seat) add("noseat",{}); continue }
+    if(before==="sukun"){ add("afterSukun",{seat,final}); if(!seat) add("noseat",{}); continue }
+    if(!seat && dag && before!=="alif"){ add("noseat",{}); add("twoImg",{}); continue }
+    if(own==="s" || final){ if(!seat){ add("noseat",{}); if(same(exp[before])) add("twoImg",{}); else { add("sakin",{seat,before}); add("drop",{}) } } else add("sakin",{seat,before}); continue }
+    // متحركة بعد متحرك
+    if(!seat){ add("noseat",{});
+      if(same(exp[own])||same(exp[before])) add("twoImg",{}); else add("drop",{}); continue }
+    if(own==="f" && (before==="d"||before==="k")){ add("openAfterDK",{seat,own,before}); continue }
+    if(own==="d" && before==="k"){ add("dAfterK",{seat,own,before}); continue }
+    add("moving",{seat,own,before});
+  }
+  // ورش: همزة في الإملاء أبدلها حرف مدّ أو سهّلها (يؤمنون ← يومنون، الذئب ← الذيب)
+  const qn=(H(raw||"").match(/ء/g)||[]).length;
+  if(raw && qn>nh){ add("ibdal",{}); add("ibdalR",{}) }
+  if(!F.length) return null;
+  return F;
+}
+const HZ_TXT={
+  init:{z:"r",t:"همزة في أول الكلمة",d:"تُصوَّر ألفًا على كل حال، مفتوحةً كانت أو مضمومةً أو مكسورةً، ولا يُعتدّ بما دخل عليها من حروف (الواو والفاء والباء واللام والسين وأل). واستُثنيت كلمات رُسمت فيها ياءً أو واوًا.",r:["m:292","m:293","m:294","m:296"]},
+  afterSukun:{z:"r",t:"همزة بعد ساكن",d:"تُحذف صورتها فلا تُكتب على حرف، ما لم يكن الساكن ألفًا في وسط الكلمة. وخرجت عن هذا أحرف صُوِّرت فيها ألفًا.",r:["m:297","m:298","m:299","m:300"]},
+  afterAlifEnd:{z:"r",t:"همزة متطرفة بعد ألف",d:"الألف ساكن، فتُحذف صورة الهمزة بعده إذا تطرّفت (السماء، جاء).",r:["m:297","m:298"]},
+  afterAlif:{z:"r",t:"همزة متوسطة بعد ألف",d:"تُرسم بحسب حركتها هي: واوًا إن ضُمّت، وياءً إن كُسرت، وتُحذف صورتها إن فُتحت. وحُذف بعضها في «أولياء» مع الضمير.",r:["m:302","m:303","m:304"]},
+  sakin:{z:"r",t:"همزة ساكنة بعد متحرك، أو متطرفة بعد متحرك",d:"تُصوَّر بحرف من جنس حركة ما قبلها: ألفًا بعد الفتح، وواوًا بعد الضم، وياءً بعد الكسر.",r:["m:307","m:308"]},
+  wawAlif:{z:"r",t:"همزة متطرفة رُسمت واوًا بعدها ألف",d:"في كلمات معدودة رُسمت الهمزة المتطرفة المرفوعة واوًا وزيدت بعدها ألف، ولا ألف قبل الواو فيهن.",r:["m:310","m:311","m:322"]},
+  openAfterDK:{z:"r",t:"همزة مفتوحة بعد ضم أو كسر",d:"تُصوَّر من جنس حركة ما قبلها: واوًا بعد الضم، وياءً بعد الكسر.",r:["m:323","m:324"]},
+  dAfterK:{z:"r",t:"همزة مضمومة بعد كسر",d:"تُصوَّر ياءً في أحرف معلومة كـ«سنقرئك» و«أنبئكم».",r:["m:325","m:326"]},
+  moving:{z:"r",t:"همزة متحركة بعد متحرك",d:"تُصوَّر بحرف من جنس حركتها هي: ألفًا إن فُتحت، وواوًا إن ضُمّت، وياءً إن كُسرت.",r:["m:327","m:328"]},
+  twoImg:{z:"r",t:"حُذفت الصورة لئلا تجتمع صورتان",d:"إذا أدّى تصوير الهمزة إلى اجتماع حرفين من جنس واحد (صورتها وحرف المد بعدها) حُذفت صورتها، كـ«ءامنتم» و«خاسئين» و«مستهزءون».",r:["m:331","m:332","m:333","m:334"]},
+  drop:{z:"r",t:"حذف صورة الهمزة في كلمات",d:"جاء في المصحف حذف صورة الهمزة في كلمات بعينها على خلاف القاعدة، وفي بعضها خلاف.",r:["m:309","m:329"]},
+  two:{z:"d",t:"همزتان في كلمة",d:"لا تُرسم لهما إلا صورة واحدة. وعند ورش تُسهَّل الثانية، فتُضبط بنقطة حمراء، ولك أن تجعلها واوًا أو ياءً حمراء بحسب حركتها.",r:["m:518","m:520","m:521","m:522","m:523"]},
+  ibdalR:{z:"r",t:"صورة الهمزة حرف مدّ",d:"الهمزة هنا مرسومة بحرف من جنس حركة ما قبلها (ألفًا بعد الفتح، وواوًا بعد الضم، وياءً بعد الكسر)، وبهذا الحرف يقرأ ورش في الإبدال.",r:["m:307","m:308","m:323","m:324"]},
+  ibdal:{z:"d",t:"همزة غيّرها ورش",d:"قرأ ورش هذه الهمزة بالإبدال حرف مدّ أو بالتسهيل، فلا تُضبط بالصفراء: المسهّلة بالحمراء، والمُبدلة يُضبط حرفها.",r:["m:504","m:505","m:506"]},
+  naql:{z:"d",t:"نقل حركة الهمزة عند ورش",d:"ينقل ورش حركة الهمزة إلى الساكن قبلها ويُسقطها، فتُجعل الحركة على الساكن، وتوضع جرّة في محلّ الهمزة.",r:["m:529","m:530","m:531"]},
+  noseat:{z:"d",t:"همزة لا صورة لها",d:"تُوضع في السطر، ويُمتحن موضعها بالعين: حيث استقرّت العين وُضعت الهمزة.",r:["m:511","m:514","m:515"]},
+  base:{z:"d",t:"ضبط الهمز",d:"الهمزة المحقَّقة نقطة صفراء، والمسهَّلة نقطة حمراء. والمفتوحة فوق الحرف، والمكسورة تحته، والمضمومة في وسطه.",r:["m:504","m:512","m:513"]}
+};
+// ---- لوحة «الهمز في الكلمة» ----
+const HZ_ORDER=["init","naql","afterSukun","afterAlifEnd","afterAlif","sakin","wawAlif","openAfterDK","dAfterK","moving","twoImg","drop","ibdalR","base","noseat","two","ibdal"];
+// ما في هذه الكلمة بعينها: «وهي هنا مكسورة بعد ألف فصُوِّرت ياءً»
+function hzHere(k,o){
+  const SN={"ا":"ألفًا","و":"واوًا","ي":"ياءً"}, VN={f:"مفتوحة",d:"مضمومة",k:"مكسورة",s:"ساكنة"}, BN={f:"فتح",d:"ضمّ",k:"كسر"};
+  const img=o.seat===undefined?"":(o.seat?"فصُوِّرت "+SN[o.seat]:"فلا صورة لها");
+  if(k==="init") return o.seat===undefined?"":(o.seat==="ا"?"وهي هنا على ألف.":o.seat?"وهي هنا "+SN[o.seat]+"، وهي من المستثنيات.":"وهي هنا بلا صورة.");
+  if(k==="afterAlif") return VN[o.own]?`وهي هنا ${VN[o.own]} بعد ألف ${img}.`:"";
+  if(k==="sakin") return BN[o.before]?`وهي هنا بعد ${BN[o.before]} ${img}.`:"";
+  if(k==="openAfterDK"||k==="dAfterK"||k==="moving") return o.seat!==undefined?`وهي هنا ${VN[o.own]||""}${BN[o.before]?" بعد "+BN[o.before]:""} ${img}.`.replace(/\s+/g," "):"";
+  return "";
+}
+function hamzaHTML(raw){
+  if(!Q.tok) return "";
+  const r=findQ(raw); if(!r||!r.hits.length) return "";
+  const f=(QF.form&&r.forms.find(x=>x.key===QF.form))||r.forms[0]; if(!f) return "";
+  const F=hamzaInfo(f.w.split(" ")[0], raw); if(!F) return "";
+  const items=F.map(x=>x.k).concat("base").filter((k,i,a)=>a.indexOf(k)===i&&HZ_TXT[k]);
+  const sec=z=>items.filter(k=>HZ_TXT[k].z===z).sort((a,b)=>HZ_ORDER.indexOf(a)-HZ_ORDER.indexOf(b));
+  const one=(k,open)=>{ const x=HZ_TXT[k]; const ids=x.r.filter(id=>byId[id]); const o=F.find(y=>y.k===k)||{}; const here=hzHere(k,o);
+    return `<details class="hzi"${open?" open":""}><summary><b>${x.t}</b><span>${x.d}</span>${here?`<em>${here}</em>`:""}<i>${ids.length===1?"بيت واحد":ids.length===2?"بيتان":ids.length.toLocaleString("ar-EG")+" أبيات"}</i></summary>${ids.map(id=>`<div class="row" data-id="${id}"><div class="vhead"><span class="vnum">${numLabel(byId[id])}</span><span class="vsec">${esc(secOf(byId[id])?secOf(byId[id]).t:"")}</span></div>${baytHTML(byId[id],null,true)}</div>`).join("")}</details>` };
+  const rs=sec("r"), ds=sec("d");
+  let h=`<div class="hz"><h3>الهمز في <span class="w">${esc(f.w)}</span></h3>`;
+  if(rs.length) h+=`<div class="hzg">في الرسم <small>مورد الظمآن · أحكام رسم الهمز</small></div>`+rs.map((k,i)=>one(k,i===0)).join("");
+  if(ds.length) h+=`<div class="hzg">في الضبط <small>الذيل · ضبط الهمز</small></div>`+ds.map(k=>one(k,false)).join("");
+  if(r.forms.length>1) h+=`<div class="hint" style="margin:8px 2px 0">التحليل لهذه الصورة. اختر صورة أخرى من المصحف تحته ليتغيّر.</div>`;
+  return h+`</div>`;
 }
 let QF = {form:null, lim:12};
 function quranHTML(raw){
@@ -374,7 +555,7 @@ function quranHTML(raw){
   if(r.forms.length>1 || r.loose) h+=`<div class="forms">${r.forms.slice(0,14).map(f=>`<button class="form${QF.form===f.key?" on":""}" data-form="${esc(f.key)}"><span class="w">${esc(f.w)}</span><small>${f.n.toLocaleString("ar-EG")}</small></button>`).join("")}</div>`;
   else h+=`<div class="forms"><span class="form" style="cursor:default"><span class="w">${esc(r.forms[0].w)}</span></span></div>`;
   h+=ayat.slice(0,QF.lim).map(i=>{ const [s,a,t,pg]=Q.data.a[i]; const js=seen.get(i);
-    const tx=t.split(" ").map((w,j)=>js.has(j)?w.split("\u00a0").map((x,k)=>k?esc(x):`<span class="hit">${esc(x)}</span>`).join("\u00a0"):esc(w)).join(" ");
+    const tx=t.split(" ").map((w,j)=>w.split("\u00a0").map((x,k)=>k?esc(x):`<span class="qw${js.has(j)?" hit":""}" data-s="${esc(x.replace(/[ۖ-ۜ۞۩]/g,""))}">${esc(x)}</span>`).join("\u00a0")).join(" ");
     return `<div class="aya"><div class="at">${tx}</div><div class="ar">سورة ${esc(Q.data.n[s-1])} · الآية ${a.toLocaleString("ar-EG")} · ص ${(+pg).toLocaleString("ar-EG")}</div></div>` }).join("");
   if(n>QF.lim) h+=`<button class="more" data-more>عرض ${Math.min(n-QF.lim,40).toLocaleString("ar-EG")} آية أخرى (بقي ${(n-QF.lim).toLocaleString("ar-EG")})</button>`;
   return h+`</div>`;
@@ -478,12 +659,12 @@ function renderSearch(){
   $("#clr").style.display = raw?"block":"none";
   if(!A(raw)){
     el.innerHTML = `<div class="empty"><b>ابحث عن كلمة قرآنية</b>اكتب الكلمة كما تعرفها، ولو بالإملاء العادي (الصلاة، رحمة، القرآن)، فتظهر أولًا كما رُسمت في المصحف في مواضعها، ثم الأبيات التي ذكرتها من مورد الظمآن وذيل الضبط والإعلان، والكلمات القرآنية في البيت بالأحمر.</div>
-    <div class="grp">أمثلة</div><div class="chips">${["العالمين","الصلاة","لكيلا","رحمت","الشيطان","ءايات","مائة","إبراهيم","الربا","بأييد"].map(w=>`<button class="chip" data-s="${w}">${w}</button>`).join("")}</div>`;
+    <div class="grp">أمثلة</div><div class="chips">${["العالمين","الصلاة","لكيلا","رحمت","يؤمنون","شيء","السماء","العلماء","مستهزئون","مائة","أأنتم","بأييد"].map(w=>`<button class="chip" data-s="${w}">${w}</button>`).join("")}</div>`;
     return;
   }
   const {hits,rules:rl}=search(raw); const qs=qsetOf(raw);
   const strong=hits.filter(h=>h.sc>=85), weak=hits.filter(h=>h.sc<85);
-  let h=quranHTML(raw);
+  let h=hamzaHTML(raw)+quranHTML(raw);
   if(h) h+=`<div class="sep">ما في «مورد الظمآن» وذيله</div>`;
   if(!hits.length) h+=`<div class="empty"><b>لم أجد بيتًا يذكر هذه الكلمة بعينها</b>جرّب صيغة أخرى للكلمة (بلا «و» أو «ال»، أو مفردها).</div>`;
   if(strong.length){ h+=`<div class="count">${strong.length} ${strong.length===1?"بيت يذكر":"أبيات تذكر"} الكلمة</div>`; h+=strong.map(x=>card(x.v,qs,{chips:true})).join("") }
