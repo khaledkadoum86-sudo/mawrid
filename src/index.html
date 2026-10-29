@@ -474,7 +474,8 @@ function shuruhHTML(v){
   const ks=Object.keys(SH.books).filter(b=>m[b]); if(!ks.length) return "";
   return `<div class="grp">الشروح</div><div class="shl">${ks.map(b=>{ const B=SH.books[b], [s,e,g0,g1]=m[b];
     const grp = g1>g0 ? `شرح الأبيات ${g0}–${g1}` : `شرح البيت ${g0}`;
-    const pg = pr(b,s).t + (e>s ? " إلى "+pr(b,e).n?.toLocaleString("ar-EG") : "");
+    const ps=pr(b,s), pe=pr(b,e), ar=x=>x.toLocaleString("ar-EG");
+    const pg = (ps.t || "صفحة "+ar(s)) + (e>s ? " إلى "+ar(ps.t? (pe.n??e) : e) : "");
     return `<button class="shb" data-pg="${b}:${s}:${v.id}"><span class="ic">${B.ic}</span><span class="tx"><b>${esc(B.t)}</b><span>${esc(B.a)} · ${grp} · ${pg}</span></span><span class="go">‹</span></button>` }).join("")}</div>
     <div class="shnote">تفتح صفحة الكتاب التي يبدأ فيها شرح البيت، وتقلّب منها إلى ما بعدها.</div>`;
 }
@@ -484,7 +485,7 @@ for(const [id,m] of Object.entries(SH.map)) for(const b in m){ const k=b+":"+m[b
 const VW = {b:null,i:0,from:null};
 function openPage(b,i,from){
   const B=SH.books[b]; i=Math.max(1,Math.min(B.n,i)); VW.b=b; VW.i=i; if(from!==undefined) VW.from=from;
-  $("#vt").textContent=B.t; const p=pr(b,i); $("#vs").textContent=(p.t||"")+"  ("+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG")+")";
+  $("#vt").textContent=B.t; const p=pr(b,i); $("#vs").textContent= p.t ? p.t+"  ("+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG")+")" : "صفحة "+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG");
   $("#vin").value=p.n??i;
   const box=$("#vimg"); box.innerHTML=`<div class="ld">جارٍ تحميل الصفحة…</div>`;
   const img=new Image(); img.alt="صفحة "+i; img.decoding="async";
