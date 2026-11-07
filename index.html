@@ -70,6 +70,8 @@ header{position:sticky;top:0;z-index:20;background:var(--green);color:#fff;
   font-size:20px;color:#888;padding:6px 8px;display:none}
 .searchbox .ico{position:absolute;right:14px;top:50%;transform:translateY(-50%);opacity:.5;pointer-events:none}
 main{max-width:860px;margin:0 auto;padding:14px 16px}
+/* في التطبيق الأصلي: هامش يسار ثابت لزر «تطبيقاتي» العائم فلا يغطي شيئًا */
+html.native main,html.native header{padding-left:64px}
 .view{display:none}.view.on{display:block}
 nav.tabs{position:fixed;bottom:0;left:0;right:0;z-index:30;display:flex;background:var(--paper);
   border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
@@ -242,6 +244,7 @@ details.hzi .row{margin-top:6px;border-inline-start:3px solid var(--gold);paddin
 </style>
 </head>
 <body>
+<script>if(window.MAWRID_NATIVE)document.documentElement.classList.add('native')</script>
 <header>
   <div class="brand"><h1>مورد الظمآن</h1><small>الرسم والضبط · رواية ورش</small>
     <div class="fz"><button class="s" data-fz="-1" aria-label="تصغير الخط">أ−</button><button class="l" data-fz="1" aria-label="تكبير الخط">أ+</button><button class="b" data-bold aria-label="خط عريض">ع</button></div></div>
