@@ -8,9 +8,25 @@
 	<array>
 		<string>ar</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.khaledkadoum.mawrid</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>mawrid</string>
+			</array>
+		</dict>
+	</array>
 	<key>WKAppBoundDomains</key>
 	<array>
 		<string>khaledkadoum86-sudo.github.io</string>
+		<string>halaqa-23193.firebaseapp.com</string>
+		<string>www.gstatic.com</string>
+		<string>firestore.googleapis.com</string>
+		<string>identitytoolkit.googleapis.com</string>
+		<string>securetoken.googleapis.com</string>
 		<string>fonts.googleapis.com</string>
 		<string>fonts.gstatic.com</string>
 	</array>

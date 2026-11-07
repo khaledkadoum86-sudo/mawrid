@@ -10,9 +10,10 @@ struct MawridApp: App {
     var body: some Scene {
         WindowGroup {
             WebContainer()
+                .onOpenURL { MawridLink.receive($0) }   // بيت مطلوب من «خزانتي»
                 .ignoresSafeArea()
-                .overlay(RenewalIndicator(appName: "مورد الظمآن"))   // نقطة الأيام الباقية للتجديد
-                .background(Color(red: 0.965, green: 0.945, blue: 0.906).ignoresSafeArea())
+                .overlay(RenewalIndicator(appName: "مورد الظمآن", current: "mawrid"))   // زر «تطبيقاتي» العائم وعدّاد أيام التجديد
+                .background(Color(red: 0.961, green: 0.969, blue: 0.980).ignoresSafeArea())
         }
     }
 }

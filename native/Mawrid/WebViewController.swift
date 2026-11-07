@@ -3,7 +3,21 @@ import WebKit
 
 let appURL = URL(string: "https://khaledkadoum86-sudo.github.io/mawrid/")!
 let appHost = "khaledkadoum86-sudo.github.io"
-private let pageBackground = UIColor(red: 0.965, green: 0.945, blue: 0.906, alpha: 1)
+private let pageBackground = UIColor(red: 0.961, green: 0.969, blue: 0.980, alpha: 1)   // #F5F7FA لون التطبيقات الموحّد
+
+/// رابط بيت وصل من «خزانتي»: mawrid://verse?id=r:23 ← تفتح الصفحة البيت مباشرة.
+enum MawridLink {
+    static let arrived = Notification.Name("MawridVerseLink")
+    static var pending: String?
+
+    static func receive(_ url: URL) {
+        guard url.host == "verse",
+              let id = URLComponents(url: url, resolvingAgainstBaseURL: false)?.queryItems?.first(where: { $0.name == "id" })?.value,
+              id.range(of: "^[a-z]:[0-9]{1,4}$", options: .regularExpression) != nil else { return }
+        pending = id
+        NotificationCenter.default.post(name: arrived, object: nil)
+    }
+}
 
 final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDelegate {
     private var webView: WKWebView!
@@ -32,6 +46,14 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         webView.load(URLRequest(url: appURL))
+        NotificationCenter.default.addObserver(self, selector: #selector(openPendingVerse), name: MawridLink.arrived, object: nil)
+    }
+
+    /// يفتح البيت المطلوب من «خزانتي» (المعرّف مفحوص في MawridLink فلا يحمل غير حرف ورقم).
+    @objc private func openPendingVerse() {
+        guard let id = MawridLink.pending, !webView.isLoading else { return }
+        MawridLink.pending = nil
+        webView.evaluateJavaScript("window.mawridOpen && mawridOpen('\(id)')", completionHandler: nil)
     }
 
     // MARK: - Links: the app stays inside, other sites open outside
@@ -40,6 +62,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
         guard let url = navigationAction.request.url else { decisionHandler(.cancel); return }
         let scheme = (url.scheme ?? "").lowercased()
         if ["blob", "data", "about"].contains(scheme) { decisionHandler(.allow); return }
+        if Siblings.handle(url) { decisionHandler(.cancel); return }   // halaqa:// khizana:// mawrid://
         if scheme == "https" && url.host == appHost { decisionHandler(.allow); return }
         if navigationAction.targetFrame?.isMainFrame ?? true {
             UIApplication.shared.open(url)
@@ -90,6 +113,7 @@ final class WebViewController: UIViewController, WKNavigationDelegate, WKUIDeleg
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         offlineView?.removeFromSuperview()
         offlineView = nil
+        openPendingVerse()
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
