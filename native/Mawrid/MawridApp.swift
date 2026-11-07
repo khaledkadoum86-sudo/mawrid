@@ -11,6 +11,7 @@ struct MawridApp: App {
         WindowGroup {
             WebContainer()
                 .ignoresSafeArea()
+                .overlay(RenewalIndicator(appName: "مورد الظمآن"))   // نقطة الأيام الباقية للتجديد
                 .background(Color(red: 0.965, green: 0.945, blue: 0.906).ignoresSafeArea())
         }
     }
