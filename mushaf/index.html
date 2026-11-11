@@ -443,7 +443,100 @@ tajPanel=function(){
 .khl{margin:2px 18px 4px 0;font-size:14px}.khi{color:#5a3d0a}.khi a{color:var(--teal)}
 .khf{background:#fffdf7;border:1px dashed var(--gold);border-radius:6px;padding:6px 8px;margin:4px 0;font-size:14px}.khf div{margin:4px 0}.khf input.kn{width:100%}
 </style>
+<script>
+// ===== الإعدادات، التنقل بالسحب، الخلفية =====
+const THEMES={cream:['كريمي','#fbf7ee','#fffdf7'],white:['أبيض','#f4f4f4','#ffffff'],beige:['بيج المصاحف','#efe3c6','#f6ecd2'],green:['أخضر هادئ','#e3eee1','#eef6ec'],blue:['أزرق هادئ','#e2ebf2','#eef4f9'],night:['ليلي','#15191d','#1f2429']};
+const SET=Object.assign({theme:'cream',ul:true,hint:true,swipe:true,fs:16,anim:true,tapHdr:false},(()=>{try{return JSON.parse(store.get('set')||'{}')}catch(e){return{}}})());
+function saveSet(){store.set('set',JSON.stringify(SET));applySet()}
+function applySet(){const t=THEMES[SET.theme]||THEMES.cream;const r=document.documentElement.style;
+  r.setProperty('--paper',t[1]);r.setProperty('--pg',t[2]);document.body.classList.toggle('night',SET.theme==='night');
+  document.body.classList.toggle('noul',!SET.ul);const h=document.querySelector('.hint');if(h)h.style.display=SET.hint?'':'none';
+  document.documentElement.style.setProperty('--fs',SET.fs+'px')}
+applySet();
+function setPanel(){
+  const b=panel('⚙ الإعدادات',`
+   <h4>لون الخلفية</h4><div class="thm">${Object.entries(THEMES).map(([k,v])=>`<button class="tb${SET.theme===k?' on':''}" data-k="${k}" style="background:${v[2]};color:${k==='night'?'#eee':'#333'}">${v[0]}</button>`).join('')}</div>
+   <h4>العرض</h4>
+   <label class="sw"><input type="checkbox" id="s_ul" ${SET.ul?'checked':''}> إظهار الخط الذهبي تحت الكلمات التي لها شاهد</label>
+   <label class="sw"><input type="checkbox" id="s_hint" ${SET.hint?'checked':''}> إظهار سطر الإرشاد فوق الصفحة</label>
+   <label class="sw"><input type="checkbox" id="s_tap" ${SET.tapHdr?'checked':''}> إخفاء الشريط العلوي بلمسة على هامش الصفحة (قراءة بملء الشاشة)</label>
+   <div class="sw">حجم خط اللوحات: <button class="mini" id="s_m">−</button> <b id="s_fs">${AR(SET.fs)}</b> <button class="mini" id="s_p">+</button></div>
+   <h4>التنقل</h4>
+   <label class="sw"><input type="checkbox" id="s_sw" ${SET.swipe?'checked':''}> التنقل بين الصفحات بالسحب (اسحب إلى اليمين للصفحة التالية، وإلى اليسار للسابقة)</label>
+   <label class="sw"><input type="checkbox" id="s_an" ${SET.anim?'checked':''}> حركة انتقال الصفحة</label>
+   <div class="sw">الانتقال إلى صفحة: <input id="s_go" type="number" min="1" max="604" style="width:80px"> <button class="mini" id="s_gob">انتقال</button></div>
+   <h4>مورد الظمآن</h4>
+   <div class="sw">عرض البيت عند الضغط: <button class="mini ${mode==='img'?'on':''}" id="s_img">نسختي المصوّرة</button> <button class="mini ${mode!=='img'?'on':''}" id="s_txt">النص</button></div>
+   <h4>البيانات</h4>
+   <div class="sw"><button class="g" id="s_dl">⤓ حفظ المصحف كاملًا للعمل دون إنترنت</button></div>
+   <div class="sw"><button class="mini" id="s_bm">★ محفوظاتي وملاحظاتي</button> <button class="mini" id="s_kh">نسخ ما أضفته من الخلاف</button></div>
+   <div class="sw"><button class="mini" id="s_rs">إعادة الإعدادات الأصلية</button></div>
+   <p class="note">مصحف المدينة برواية ورش (مجمع الملك فهد) · العدّ المدني الأخير · شواهد «مورد الظمآن» و«الإعلان» من نسختك المصوّرة · الأثمان على التثمين المغربي، والخلاف من «رؤوس الأحزاب وأقسامها».</p>`);
+  b.querySelectorAll('.tb').forEach(x=>x.onclick=()=>{SET.theme=x.dataset.k;saveSet();setPanel()});
+  const ck=(id,k)=>{document.getElementById(id).onchange=e=>{SET[k]=e.target.checked;saveSet()}};
+  ck('s_ul','ul');ck('s_hint','hint');ck('s_sw','swipe');ck('s_an','anim');ck('s_tap','tapHdr');
+  document.getElementById('s_m').onclick=()=>{SET.fs=Math.max(12,SET.fs-1);saveSet();document.getElementById('s_fs').textContent=AR(SET.fs)};
+  document.getElementById('s_p').onclick=()=>{SET.fs=Math.min(24,SET.fs+1);saveSet();document.getElementById('s_fs').textContent=AR(SET.fs)};
+  document.getElementById('s_gob').onclick=()=>{const v=+document.getElementById('s_go').value;if(v){pn.classList.remove('on');show(v)}};
+  document.getElementById('s_img').onclick=()=>{mode='img';store.set('mmode','img');setPanel()};
+  document.getElementById('s_txt').onclick=()=>{mode='txt';store.set('mmode','txt');setPanel()};
+  const dl=document.getElementById('dl');document.getElementById('s_dl').onclick=()=>{if(dl)dl.click();document.getElementById('s_dl').textContent='جارٍ الحفظ… تابع الزر في الأعلى'};
+  document.getElementById('s_bm').onclick=bmPanel;
+  document.getElementById('s_kh').onclick=()=>{tajPanel();setTimeout(()=>document.getElementById('khexp').click(),50)};
+  document.getElementById('s_rs').onclick=()=>{store.set('set','{}');location.reload()};
+}
+// زر الإعدادات في الرأس
+{const b=document.createElement('button');b.textContent='⚙ الإعدادات';b.onclick=setPanel;document.querySelector('header').appendChild(b)}
+// التنقل بالسحب
+let tx=0,ty=0,tt=0;
+const VW=document.getElementById('view');
+VW.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;tx=e.touches[0].clientX;ty=e.touches[0].clientY;tt=Date.now()},{passive:true});
+VW.addEventListener('touchend',e=>{if(!SET.swipe||!tx)return;const t=e.changedTouches[0];const dx=t.clientX-tx,dy=t.clientY-ty;tx=0;
+  if(Math.abs(dx)>60&&Math.abs(dy)<Math.abs(dx)*0.6&&Date.now()-tt<800){turn(dx>0?1:-1)}},{passive:true});
+function turn(d){const p=cur+d;if(p<1||p>604)return;
+  if(SET.anim){const pg=document.querySelector('.qpage');if(pg){pg.style.transition='transform .18s ease,opacity .18s';pg.style.transform=`translateX(${d>0?40:-40}px)`;pg.style.opacity='.2';
+    setTimeout(()=>{show(p);const n=document.querySelector('.qpage');if(n){n.style.transform=`translateX(${d>0?-40:40}px)`;n.style.opacity='.2';requestAnimationFrame(()=>{n.style.transition='transform .18s ease,opacity .18s';n.style.transform='';n.style.opacity=''})}},170);return}}
+  show(p)}
+document.addEventListener('keydown',e=>{if(pn.classList.contains('on')||document.getElementById('mw').classList.contains('on'))return;if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowLeft')turn(1);if(e.key==='ArrowRight')turn(-1)});
+// إخفاء الرأس بلمسة على هامش الصفحة
+VW.addEventListener('click',e=>{if(!SET.tapHdr||e.target.closest('.bx.k,button,a,textarea'))return;document.body.classList.toggle('fsr')});
+// شريط سفلي صغير: الصفحة والموضع
+</script>
+<style>
+.qwrap{background:var(--pg,#fff)!important}
+#pnb{font-size:var(--fs,16px)}
+#pnb h4{margin:14px 0 6px;color:var(--teal);border-bottom:1px solid var(--line);padding-bottom:2px}
+.thm{display:flex;flex-wrap:wrap;gap:8px}.tb{border:2px solid #ccc!important;min-width:84px;padding:8px 10px!important}.tb.on{border-color:var(--gold)!important;box-shadow:0 0 0 2px var(--gold)}
+.sw{display:block;margin:8px 0}.mini.on{background:var(--gold);color:#fff}
+body.noul .bx.k{box-shadow:none}
+body.fsr header,body.fsr .hint,body.fsr .nav,body.fsr .ptools{display:none}
+body.night{--ink:#e8e2d4;--line:#3a4048;color:#e8e2d4}
+body.night .page,body.night #pnb,body.night .trow,body.night .ths{background:#1f2429;color:#e8e2d4}
+body.night .qimg{filter:invert(1) hue-rotate(180deg) brightness(.92);mix-blend-mode:normal}
+body.night .pinfo,body.night .hint,body.night .note,body.night .rg{color:#b9ad90}
+body.night input,body.night select,body.night textarea{background:#2a3036;color:#eee;border-color:#444}
+body.night .bx.k{box-shadow:inset 0 -2px 0 rgba(212,180,110,.7)}
+body.night #pn,body.night #mw{background:var(--paper)}
+body.night .lb{filter:brightness(.85)}
+</style>
+<script>
+// ===== «مورد الظمآن» داخل التطبيق (يغني عن تطبيقه المنفصل) =====
+const mfr=document.createElement('div');mfr.id='mfr';mfr.innerHTML='<div id="mfrh"><span>مورد الظمآن وشروحه</span><button class="g" id="mfrx">↩ الرجوع إلى المصحف</button></div><iframe id="mfri" title="مورد الظمآن"></iframe>';document.body.appendChild(mfr);
+document.getElementById('mfrx').onclick=()=>mfr.classList.remove('on');
+function openMawrid(vid){const f=document.getElementById('mfri');const u='https://khaledkadoum86-sudo.github.io/mawrid/'+(vid?'#v='+vid:'');if(f.src!==u)f.src=u;mfr.classList.add('on')}
+document.addEventListener('click',e=>{const a=e.target.closest('#shl');if(!a)return;e.preventDefault();const m=(a.href.match(/(?:#v=|id=)([mi]:\d+)/)||[])[1];openMawrid(m)},true);
+{const b=document.createElement('button');b.textContent='📚 الشروح';b.onclick=()=>openMawrid();document.querySelector('header').appendChild(b)}
+</script>
+<style>
+#mfr{position:fixed;inset:0;z-index:20;background:var(--paper);display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#mfr.on{display:flex}#mfrh{background:var(--teal);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-weight:bold}
+#mfri{flex:1;border:0;width:100%}
+#dl{display:none}
+header button{padding:3px 8px;font-size:14px}
+</style>
 </body>
+
 
 
 </html>
