@@ -226,5 +226,170 @@ document.getElementById('dl').onclick=async()=>{
 };
 if(store.get('saved'))document.getElementById('dl').textContent='✓ محفوظ في الجهاز';
 </script>
+<script>
+// ===== الإضافات: التجزئة، مسائل الربع، تصحيح اللوح، الاختبار، المحفوظات =====
+let WI={},TH=[],MG={},AIDX=null;
+Promise.all(['winfo.json','thumn.json','mg.json'].map(f=>fetch(f).then(r=>r.json()))).then(([a,b,c])=>{WI=a;TH=b;MG=c;if(Q)show(cur)});
+const ORDA=['الأول','الثاني','الثالث','الرابع','الخامس','السادس','السابع','الثامن'];
+function aIdx(s,a){if(!AIDX){AIDX={};Q.a.forEach((r,i)=>AIDX[r[0]+':'+r[1]]=i)}return AIDX[s+':'+a]}
+function thumnOf(ai){let lo=0,hi=TH.length-1,r=0;while(lo<=hi){const m=(lo+hi)>>1;if(aIdx(TH[m][0],TH[m][1])<=ai){r=m;lo=m+1}else hi=m-1}return r}
+function posLabel(t){const h=Math.floor(t/8)+1,j=Math.ceil(h/2);return `الجزء ${AR(j)} · الحزب ${AR(h)} · الثمن ${AR(t%8+1)}`}
+// --- اللوحة العامة
+const pn=document.createElement('div');pn.id='pn';pn.innerHTML='<div id="pnh"><div class="t" id="pnt"></div><button class="g" id="pnx">✕ إغلاق</button></div><div id="pnb"></div>';document.body.appendChild(pn);
+document.getElementById('pnx').onclick=()=>pn.classList.remove('on');
+function panel(title,html){document.getElementById('pnt').innerHTML=title;const b=document.getElementById('pnb');b.innerHTML=html;b.scrollTop=0;pn.classList.add('on');return b}
+// --- تصنيف الأبيات
+const GEN=new Set([48,49,50,53,91,151]);
+const COMMON=new Set(['الله','لله','بالله','والله','الذين','والذين','الذي','بالذي','التي']);
+const BAB=[[255,282,'الياءات المحذوفة'],[283,288,'الواوات المحذوفة'],[289,290,'حذف إحدى اللامين'],[291,337,'رسم الهمز'],[338,356,'الزيادة'],[357,385,'الألف المرسومة ياءً'],[386,390,'الواو المرسومة ياءً'],[391,396,'الألف المرسومة واوًا'],[397,421,'المقطوع'],[422,433,'الموصول'],[434,448,'هاء التأنيث المرسومة تاءً']];
+const bab=n=>(BAB.find(b=>n>=b[0]&&n<=b[1])||[0,0,'الرسم'])[2];
+function agg(i0,i1){ // آيات من i0 إلى i1 شاملًا
+  const G={};
+  for(let ai=i0;ai<=i1;ai++){const [s,a]=Q.a[ai];const wm=W[s+':'+a];if(!wm)continue;const inf=WI[s+':'+a]||{};
+    const parts=TK(ai).flatMap(t=>t.parts);
+    for(const ti in wm){const info=inf[ti]||[0,''];const key=info[1];if(COMMON.has(key))continue;
+      const ids=wm[ti].filter(n=>!GEN.has(n));if(!ids.length)continue;
+      const pt=parts.find(p=>p.ti===+ti);const tok=pt?pt.t:'';
+      const cats=new Set();for(const n of ids){if(n>1000)cats.add('i');else if(n<=254)cats.add(info[0]?'d':'t');else if(n<=448)cats.add('r:'+bab(n));else cats.add('z')}
+      const rep=key&&firstMap()[key]<i0;
+      for(const c of cats){const k=c+'|'+(key||tok);const g=G[k]||(G[k]={c,tok,ids:new Set(),loc:[],s,a,ti:+ti,rep});ids.forEach(n=>g.ids.add(n));
+        const l=(s===2?'':Q.n[s-1]+' ')+AR(a);if(!g.loc.includes(l))g.loc.push(l)}}}
+  return Object.values(G);
+}
+let FIRST=null;
+function firstMap(){if(FIRST)return FIRST;FIRST={};Q.a.forEach(([s,a],ai)=>{const wm=W[s+':'+a];if(!wm)return;const inf=WI[s+':'+a]||{};for(const ti in wm){const k=(inf[ti]||[0,''])[1];if(k&&!(k in FIRST))FIRST[k]=ai}});return FIRST}
+let SHOWREP=false;
+function chip(g){const ids=[...g.ids].sort((x,y)=>x-y);const loc=g.loc.length>3?g.loc[0]+' …':g.loc.join('، ');
+  return `<span class="ch2" data-ids="${ids.join(',')}" data-t="${E(g.tok)}" data-l="${E(Q.n[g.s-1]+' '+AR(g.a))}"><span class="qw2">${E(g.tok)}</span><i>${loc}</i><sup>${ids.slice(0,2).map(n=>n>1000?'إ'+AR(n-1000):AR(n)).join('،')}</sup></span>`}
+function report(i0,i1,thumns){
+  const ALL=agg(i0,i1);const nrep=ALL.filter(g=>g.rep).length;const L=SHOWREP?ALL:ALL.filter(g=>!g.rep);let h='';
+  const sec=(lbl,cls,arr)=>{if(arr.length)h+=`<p><span class="lb ${cls}">${lbl}</span>${arr.map(chip).join(' ')}</p>`};
+  sec('المحذوف','del',L.filter(g=>g.c==='d'));sec('الثابت','thb',L.filter(g=>g.c==='t'));
+  const R=L.filter(g=>g.c.startsWith('r:'));if(R.length){const by={};R.forEach(g=>(by[g.c.slice(2)]=by[g.c.slice(2)]||[]).push(g));
+    h+='<p><span class="lb">الرسم</span>'+Object.entries(by).map(([b,a])=>`<b class="bb">${E(b)}:</b> `+a.map(chip).join(' ')).join(' <span class="sep">◆</span> ')+'</p>'}
+  sec('الضبط','',L.filter(g=>g.c==='z'));sec('الإعلان','ila',L.filter(g=>g.c==='i'));
+  let mut=[],gh=[];(thumns||[]).forEach(t=>{const m=MG[t];if(m){mut=mut.concat(m.m||[]);gh=gh.concat(m.g||[])}});
+  if(mut.length)h+='<div class="mt"><span class="lb">المتشابه</span><ul>'+mut.map(([a,b,c])=>`<li><span class="qw2">${E(a)}</span> ⟷ <span class="qw2">${E(b)}</span> — ${E(c)}</li>`).join('')+'</ul></div>';
+  if(gh.length)h+='<p><span class="lb">الغريب</span>'+gh.map(([a,b])=>`<span class="qw2">${E(a)}</span>: ${E(b)}`).join(' <span class="sep">•</span> ')+'</p>';
+  if(thumns&&!mut.length&&!gh.length)h+='<p class="note">المتشابه والغريب مُعَدّان للحزبين الأول والثاني، ويُضافان لبقية الأحزاب تباعًا.</p>';
+  const q=L.filter(g=>g.c==='d'||g.c==='t');
+  if(q.length)h+=`<div class="qz"><button class="g" id="qzb">🎓 اختبر الطلبة في ألفات هذا المقطع (${AR(q.length)})</button></div>`;
+  if(nrep)h+=`<p class="note"><label><input type="checkbox" class="srep" ${SHOWREP?'checked':''}> إظهار الكلمات التي سبق ذكرها في أرباع قبله (${AR(nrep)})</label></p>`;
+  h+='<p class="note">الرقم الذهبي رقم البيت من «مورد الظمآن» (و«إ» للإعلان)؛ اضغط الكلمة يفتح بيتها. لا تُذكر الأحكام المطّردة (جمع السالم، «نا»، يا النداء وها التنبيه) ولا لفظ الجلالة والموصولات.</p>';
+  return {h,q};
+}
+document.addEventListener('click',e=>{const c=e.target.closest('.ch2');if(!c)return;openM(c.dataset.ids.split(',').map(Number),c.dataset.t,c.dataset.l)});
+function quiz(q){
+  const arr=q.slice().sort(()=>Math.random()-.5);let i=0,ok=0;
+  const step=()=>{if(i>=arr.length){panel('🎓 نتيجة الاختبار',`<div class="qzc"><div class="big">${AR(ok)} / ${AR(arr.length)}</div><button class="g" onclick="quiz(window._qq)">أعد الاختبار</button></div>`);return}
+    const g=arr[i];const b=panel(`🎓 اختبار الألف (${AR(i+1)} من ${AR(arr.length)})`,`<div class="qzc"><div class="qw3">${E(g.tok.replace(/ٰ/g,'ا'))}</div><div class="loc">${E(Q.n[g.s-1])} ${AR(g.a)}</div><p>هل الألف في هذه الكلمة <b>محذوفة</b> أم <b>ثابتة</b> في الرسم؟</p><div class="btns"><button class="g" data-v="d">محذوفة</button><button class="g" data-v="t">ثابتة</button></div><div id="qzr"></div></div>`);
+    b.querySelectorAll('.btns button').forEach(x=>x.onclick=()=>{const right=x.dataset.v===g.c;if(right)ok++;
+      document.getElementById('qzr').innerHTML=`<p class="${right?'okk':'bad'}">${right?'✓ صواب':'✗ خطأ'} — الألف ${g.c==='d'?'محذوفة':'ثابتة'}: <span class="qw2">${E(g.tok)}</span></p>${chip(g)}<br><button class="g" id="qzn">التالي ←</button>`;
+      b.querySelectorAll('.btns button').forEach(y=>y.disabled=true);document.getElementById('qzn').onclick=()=>{i++;step()}})};
+  window._qq=q;step();
+}
+function bindQuiz(q){const b=document.getElementById('qzb');if(b)b.onclick=()=>quiz(q)}
+// --- مسائل الربع
+function rubPanel(r){
+  r=Math.max(0,Math.min(239,r));const t0=2*r,t1=2*r+1;
+  const i0=aIdx(TH[t0][0],TH[t0][1]),i1=t1+1<TH.length?aIdx(TH[t1+1][0],TH[t1+1][1])-1:Q.a.length-1;
+  const {h,q}=report(i0,i1,[t0,t1]);const hz=Math.floor(t0/8)+1,rb=(r%4);
+  const head=`<div class="ths">${[t0,t1].map(t=>`<div><span class="tn">الثمن ${AR(t%8+1)}</span> <a class="qw2 jmp" data-p="${TH[t][2]}">${E(TH[t][3])}</a> <span class="rg">(${E(Q.n[TH[t][0]-1])} ${AR(TH[t][1])}، ص${AR(TH[t][2])})</span></div>`).join('')}</div>
+   <div class="rnav"><button class="g" id="rn">الربع التالي ←</button><button class="g" id="rp">→ الربع السابق</button></div>`;
+  panel(`مسائل الربع ${ORDA[rb]} من الحزب ${AR(hz)}`,head+h);
+  const sr=document.querySelector('.srep');if(sr)sr.onchange=()=>{SHOWREP=sr.checked;rubPanel(r)};
+  document.getElementById('rn').onclick=()=>rubPanel(r+1);document.getElementById('rp').onclick=()=>rubPanel(r-1);bindQuiz(q);
+}
+document.addEventListener('click',e=>{const j=e.target.closest('.jmp');if(!j)return;e.preventDefault();pn.classList.remove('on');show(+j.dataset.p)});
+// --- تصحيح اللوح
+function lawhPanel(){
+  const rows=BX[cur]||[];const a0=rows.length?rows[0][0]:0,a1=rows.length?rows[rows.length-1][0]:0;
+  const so=Q.n.map((n,i)=>`<option value="${i+1}">${AR(i+1)}. ${E(n)}</option>`).join('');
+  const b=panel('تصحيح اللوح',`<div class="lw"><div><b>من:</b> <select id="ls0">${so}</select> الآية <input id="la0" type="number" min="1"></div>
+   <div><b>إلى:</b> <select id="ls1">${so}</select> الآية <input id="la1" type="number" min="1"></div>
+   <button class="g" id="lgo">اجمع مسائل اللوح</button></div><div id="lout"></div>`);
+  document.getElementById('ls0').value=Q.a[a0][0];document.getElementById('la0').value=Q.a[a0][1];
+  document.getElementById('ls1').value=Q.a[a1][0];document.getElementById('la1').value=Q.a[a1][1];
+  document.getElementById('lgo').onclick=()=>{let i0=aIdx(+ls0.value,+la0.value),i1=aIdx(+ls1.value,+la1.value);
+    const o=document.getElementById('lout');if(i0==null||i1==null){o.innerHTML='<p class="bad">رقم آية غير موجود في هذه السورة.</p>';return}
+    if(i1<i0)[i0,i1]=[i1,i0];const ts=[];for(let t=thumnOf(i0);t<=thumnOf(i1);t++)ts.push(t);
+    const {h,q}=report(i0,i1,ts);const run=()=>document.getElementById('lgo').onclick();setTimeout(()=>{const sr=o.querySelector('.srep');if(sr)sr.onchange=()=>{SHOWREP=sr.checked;run()}});o.innerHTML=`<p class="rg">من ${E(Q.n[Q.a[i0][0]-1])} ${AR(Q.a[i0][1])} إلى ${E(Q.n[Q.a[i1][0]-1])} ${AR(Q.a[i1][1])} — ${AR(i1-i0+1)} آية</p>`+h;bindQuiz(q)};
+}
+// --- التجزئة
+const nm2=s=>s.replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
+function tajPanel(){
+  const b=panel('التجزئة: الأجزاء والأحزاب والأثمان',`<input id="tq" class="tq" placeholder="رقم الحزب، أو «جزء ٥»، أو كلمات من أول الثمن"><div id="tl"></div>`);
+  const draw=v=>{v=(v||'').trim();const dig=v.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));const num=+(dig.match(/\d+/)||[0])[0];
+    const isJ=/جز/.test(v);const txt=nm2(v.replace(/[\d٠-٩]/g,'').replace(/جزء|الجزء|حزب|الحزب/g,'').trim());
+    let h='';for(let hz=1;hz<=60;hz++){const j=Math.ceil(hz/2);
+      if(num&&!txt&&(isJ?j!==num:hz!==num))continue;
+      const ts=[];for(let k=0;k<8;k++){const t=(hz-1)*8+k;if(txt&&!nm2(TH[t][3]).includes(txt))continue;ts.push(t)}
+      if(txt&&!ts.length)continue;
+      if(hz%2===1||(!h.includes('data-j="'+j+'"')))h+=`<div class="jz" data-j="${j}">الجزء ${AR(j)}</div>`;
+      h+=`<details ${num||txt?'open':''}><summary><b>الحزب ${AR(hz)}</b> <span class="qw2">${E(TH[(hz-1)*8][3])}</span> <span class="rg">ص${AR(TH[(hz-1)*8][2])}</span></summary>`+
+        ts.map(t=>`<div class="trow"><a class="jmp" data-p="${TH[t][2]}"><span class="tn">الثمن ${AR(t%8+1)}</span> <span class="qw2">${E(TH[t][3])}</span> <span class="rg">${E(Q.n[TH[t][0]-1])} ${AR(TH[t][1])} · ص${AR(TH[t][2])}</span></a>${t%2===0?` <button class="mini" data-r="${t/2}">مسائل الربع</button>`:''}</div>`).join('')+'</details>'}
+    document.getElementById('tl').innerHTML=h||'<p>لا نتيجة</p>'};
+  document.getElementById('tq').oninput=e=>draw(e.target.value);draw('');
+}
+document.addEventListener('click',e=>{const m=e.target.closest('.mini[data-r]');if(m)rubPanel(+m.dataset.r)});
+// --- المحفوظات والملاحظات
+const BM=()=>{try{return JSON.parse(store.get('bm')||'{}')}catch(e){return{}}};
+const setBM=o=>store.set('bm',JSON.stringify(o));
+function bmPanel(){const o=BM();const ks=Object.keys(o).map(Number).sort((a,b)=>a-b);
+  panel('محفوظاتي',ks.length?ks.map(p=>{const t=thumnOf((BX[p]||[[0]])[0][0]);return `<div class="trow"><a class="jmp" data-p="${p}"><b>صفحة ${AR(p)}</b> <span class="rg">${posLabel(t)}</span></a>${o[p]?`<div class="nt">${E(o[p])}</div>`:''}</div>`}).join(''):'<p>لم تحفظ صفحة بعد. اضغط ☆ في أعلى أي صفحة لحفظها، واكتب ملاحظتك تحتها.</p>')}
+// --- ربط بعرض الصفحة
+const _show=show;
+show=function(p,flash){_show(p,flash);if(!TH.length||!BX[cur])return;
+  const rows=BX[cur];const t=rows.length?thumnOf(rows[0][0]):0;const o=BM();const has=cur in o;
+  const pi=document.querySelector('.pinfo');if(pi){pi.innerHTML=`<span>${E(Q.n[Q.a[rows[0][0]][0]-1])} · <small>${posLabel(t)}</small></span><span><button class="star" id="star">${has?'★':'☆'}</button> ${AR(cur)}</span>`;
+    document.getElementById('star').onclick=()=>{const o=BM();if(cur in o)delete o[cur];else o[cur]='';setBM(o);show(cur)}}
+  const pg=document.querySelector('.qpage');if(pg){const d=document.createElement('div');d.className='ptools';
+    d.innerHTML=`<button class="g" id="rb">مسائل هذا الربع</button><button class="g" id="lw">تصحيح لوح</button>${has?`<textarea id="nt" placeholder="ملاحظتك على هذه الصفحة">${E(o[cur]||'')}</textarea>`:''}`;
+    pg.after(d);document.getElementById('rb').onclick=()=>rubPanel(Math.floor(t/2));document.getElementById('lw').onclick=lawhPanel;
+    const nt=document.getElementById('nt');if(nt)nt.oninput=()=>{const o=BM();o[cur]=nt.value;setBM(o)}}
+};
+// --- رابط الشروح من البيت
+const _go=go;
+go=function(n){_go(n);let l=document.getElementById('shl');if(!l){l=document.createElement('a');l.id='shl';l.className='shl';l.target='_blank';l.rel='noopener';document.getElementById('chips').before(l)}
+  l.href='https://khaledkadoum86-sudo.github.io/mawrid/#v='+(n>1000?'i:'+(n-1000):'m:'+n);l.textContent='📚 البيت '+(n>1000?'من الإعلان '+AR(n-1000):AR(n))+' وشروحه (دليل الحيران، التبيان، فتح المنان، الطراز) في تطبيق «مورد الظمآن» ↗';l.style.display='block'};
+// --- أزرار الرأس
+const hd=document.querySelector('header');
+[['التجزئة',tajPanel],['تصحيح لوح',lawhPanel],['★ محفوظاتي',bmPanel]].forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;hd.appendChild(b)});
+</script>
+<style>
+#pn{position:fixed;inset:0;background:var(--paper);display:none;flex-direction:column;z-index:9;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#pn.on{display:flex}
+#pnh{background:var(--teal);color:#fff;padding:8px 10px;display:flex;gap:8px;align-items:center}
+#pnh .t{flex:1;font-size:16px;font-weight:700}
+#pnb{flex:1;overflow:auto;padding:8px 12px 30vh;max-width:760px;width:100%;margin:0 auto;font-size:16px;line-height:1.8;-webkit-overflow-scrolling:touch}
+#pnb p,.mt{margin:4px 0 8px;border-bottom:1px dotted #d8cba8;padding-bottom:6px}
+.lb{display:inline-block;background:#eee7d6;color:#5a3d0a;font-weight:bold;padding:0 8px;border-radius:4px;margin-left:6px;font-size:14px}
+.lb.del{background:#f6dcdc;color:#8a1c1c}.lb.thb{background:#dcefe0;color:#1c5a2a}.lb.ila{background:#dde7f3;color:#1f3f6a}
+.ch2{display:inline-block;white-space:nowrap;margin:0 0 2px 10px;cursor:pointer;border-bottom:1.5px solid rgba(168,129,47,.5);border-radius:3px;padding:0 2px}
+.ch2:active,.ch2:hover{background:#f3e7c7}
+.ch2 i{font-style:normal;color:#777;font-size:12px;margin-right:3px}.ch2 sup{color:#a8812f;font-size:11px;margin-right:2px}
+.qw2{font-family:"Warsh","Amiri",serif;font-size:21px}
+.bb{color:var(--teal)}.sep{color:#a8812f;margin:0 4px}.note{color:#7a6a4a;font-size:13px}
+.mt ul{margin:0;padding-right:18px}
+.ths{border:1px solid var(--gold);border-radius:6px;padding:4px 10px;margin-bottom:6px;background:#fffdf7}
+.tn{color:var(--gold);font-weight:bold}.rg{color:#777;font-size:13px}
+.rnav,.qz{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.jmp{cursor:pointer;color:inherit;text-decoration:none}
+.lw div{margin:6px 0}.lw input{width:70px}
+.tq{width:100%;padding:6px 8px;font-size:16px;margin-bottom:6px}
+.jz{background:var(--teal);color:#fff;border-radius:5px;padding:1px 10px;margin:10px 0 4px;font-size:14px}
+details{border-bottom:1px solid #e7dcc3;padding:2px 0}summary{cursor:pointer}
+.trow{padding:3px 14px 3px 0;border-bottom:1px dotted #eee}
+.mini{font-size:12px;padding:1px 7px;background:#f3e7c7;color:#5a3d0a;border:1px solid var(--gold)}
+.ptools{max-width:640px;margin:0 auto 8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.ptools textarea{width:100%;min-height:60px;font-family:"Amiri",serif;font-size:15px;border:1px solid var(--line);border-radius:6px;padding:6px}
+.star{background:none;color:var(--gold);font-size:18px;padding:0 4px}
+.pinfo small{color:#7a6a4a;font-size:12px}
+.qzc{text-align:center}.qw3{font-family:"Warsh","Amiri";font-size:44px;margin:14px 0 2px}.qzc .loc{color:#777}
+.qzc .btns{display:flex;gap:14px;justify-content:center;margin:10px}.qzc .btns button{font-size:19px;padding:6px 22px}
+.okk{color:#1c6a2a;font-weight:bold}.bad{color:#9a1c1c;font-weight:bold}.big{font-size:48px;color:var(--teal);margin:20px}
+.shl{display:none;background:#fff7e3;color:#5a3d0a;padding:5px 10px;font-size:14px;text-decoration:none;border-bottom:1px solid var(--line)}
+</style>
 </body>
+
 </html>
