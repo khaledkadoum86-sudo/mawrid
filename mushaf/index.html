@@ -215,7 +215,7 @@ document.getElementById('res').addEventListener('click',e=>{
 });
 </script>
 <script>
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{r.update();document.addEventListener('visibilitychange',()=>{if(!document.hidden)r.update()})}).catch(()=>{});let swR=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(swR){swR=false;location.reload()}})}
 document.getElementById('dl').onclick=async()=>{
   const b=document.getElementById('dl');if(!('caches' in window)){b.textContent='غير متاح';return}
   const c=await caches.open('mushaf-pages');const L=[];for(let p=1;p<=604;p++)L.push('qp/'+p+'.png');
