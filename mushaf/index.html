@@ -25,7 +25,7 @@ main{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
 .pinfo{display:flex;justify-content:space-between;color:var(--gold);font-size:14px;border-bottom:1px solid var(--line);padding-bottom:4px;margin-bottom:6px}
 .sura{text-align:center;margin:10px 0 6px;padding:4px;border:1.5px solid var(--gold);border-radius:8px;color:var(--teal);font-size:19px;background:#f6efdc}
 .qpage{padding:8px 8px 6px;max-width:640px}
-.qwrap{position:relative;background:#fff;border-radius:4px;min-height:60vh}
+.qwrap{position:relative;background:#fff;border-radius:4px}
 .qimg{width:100%;display:block;mix-blend-mode:multiply}
 .bx{position:absolute;border-radius:3px}
 .bx.k{cursor:pointer;box-shadow:inset 0 -2px 0 rgba(168,129,47,.55)}
@@ -119,7 +119,7 @@ function show(p,flash){
   p=Math.max(1,Math.min(604,p));cur=p;store.set('pg',p);
   document.getElementById('pg').value=p;
   const bx=BX[p]||[];const sn=bx.length?Q.a[bx[0][0]][0]:1;
-  let h=`<div class="page qpage"><div class="pinfo"><span>${E(Q.n[sn-1])}</span><span>${AR(p)}</span></div><div class="qwrap"><img class="qimg" id="qimg" src="qp/${p}.png" alt="صفحة ${p}" decoding="async">`;
+  let h=`<div class="page qpage"><div class="pinfo"><span>${E(Q.n[sn-1])}</span><span>${AR(p)}</span></div><div class="qwrap" style="aspect-ratio:${p<3?'1 / 1':'900 / 1435'}"><img class="qimg" id="qimg" src="qp/${p}.png" alt="صفحة ${p}" decoding="async">`;
   for(const [ai,ti,x1,y1,x2,y2] of bx){const [s,a]=Q.a[ai];const k=W[s+':'+a]&&W[s+':'+a][ti];
     h+=`<span class="bx${k?' k':''}" data-s="${s}" data-a="${a}" data-i="${ti}" style="left:${x1/10}%;top:${y1/10}%;width:${(x2-x1)/10}%;height:${(y2-y1)/10}%"></span>`;}
   h+=`</div></div><div class="nav"><button class="g" onclick="show(cur+1)">الصفحة التالية ←</button><button class="g" onclick="show(cur-1)">→ الصفحة السابقة</button></div>`;
