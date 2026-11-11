@@ -399,7 +399,7 @@ const KLBL=['عند جمهور المغاربة','عند بعض المغاربة
 function khOf(t){return [...(KH[t]||[]).map(x=>({...x,fix:1})),...(KHL()[t]||[])]}
 function khHtml(t){const L=khOf(t);if(!L.length)return'';
   return '<div class="khl">'+L.map((x,k)=>{const ai=(x.s&&x.a)?aIdx(x.s,x.a):null;const pg=ai!=null?Q.a[ai][3]:null;
-    return `<div class="khi">◆ <b>${E(x.lbl)}</b>${x.s&&x.a?`: يبدأ ${pg?`<a class="jmp" data-p="${pg}">`:''}من ${E(Q.n[x.s-1])} ${AR(x.a)}${pg?` · ص${AR(pg)}</a>`:''}`:''}${x.note?` — ${E(x.note)}`:''}${x.fix?'':` <button class="mini khdel" data-t="${t}" data-k="${k-(KH[t]||[]).length}">حذف</button>`}</div>`}).join('')+'</div>'}
+    return `<div class="khi">◆ <b>${E(x.lbl)}</b>${x.s&&x.a?`: يبدأ الثمن ${pg?`<a class="jmp" data-p="${pg}">`:''}من ${E(Q.n[x.s-1])} ${AR(x.a)}${pg?` · ص${AR(pg)}</a>`:''}`:''}${x.note?` — ${E(x.note)}`:''}${x.src?` <span class="rg">(${E(x.src)})</span>`:''}${x.fix?'':` <button class="mini khdel" data-t="${t}" data-k="${k-(KH[t]||[]).length}">حذف</button>`}</div>`}).join('')+'</div>'}
 function khForm(t,host){
   const so=Q.n.map((n,i)=>`<option value="${i+1}">${AR(i+1)}. ${E(n)}</option>`).join('');
   host.innerHTML=`<div class="khf"><div>القول: <select class="kl">${KLBL.map(l=>`<option>${l}</option>`).join('')}<option value="">— أخرى (اكتبها في التعليق) —</option></select></div>
@@ -421,7 +421,7 @@ document.addEventListener('click',e=>{
 // إعادة تعريف لوحة التجزئة لتضمين الخلاف
 tajPanel=function(){
   const b=panel('التجزئة: الأجزاء والأحزاب والأثمان',`<input id="tq" class="tq" placeholder="رقم الحزب، أو «جزء ٥»، أو كلمات من أول الثمن، أو «خلاف»">
-   <p class="note">◆ = موضع فيه خلاف في أوله بين المغاربة. اضغط «✎ خلاف» بجانب أي ثمن لتضيف قولًا آخر بقائله وموضعه.</p><div id="tl"></div>
+   <p class="note">◆ = موضع فيه خلاف بين المغاربة، من بحث «رؤوس الأحزاب وأقسامها» (عن «إعلام الإخوان» للضباع)؛ وأرقام الآيات في التعليق بالعدّ الكوفي كما في الأصل، والانتقال بالعدّ المدني الأخير. اضغط «✎ خلاف» بجانب أي ثمن لتضيف قولًا آخر بقائله وموضعه.</p><div id="tl"></div>
    <p class="note"><button class="mini" id="khexp">نسخ ما أضفتُه من الخلاف لإرساله</button></p><textarea id="khbox" style="display:none;width:100%;height:120px;direction:ltr"></textarea>`);
   let last='';const draw=v=>{last=v=(v||'').trim();const dig=v.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));const num=+(dig.match(/\d+/)||[0])[0];
     const isJ=/جز/.test(v),onlyK=/خلاف/.test(v);const txt=nm2(v.replace(/[\d٠-٩]/g,'').replace(/جزء|الجزء|حزب|الحزب|خلاف/g,'').trim());
