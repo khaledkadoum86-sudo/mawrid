@@ -1,4 +1,4 @@
-const CACHE="mushaf-core-v5";
+const CACHE="mushaf-core-v6";
 const PAGES="mushaf-pages"; // صور الصفحات لا تتغير
 const CORE=["./","index.html","mawrid.json","wmap.json","vmap.json","boxes.json","winfo.json","thumn.json","mg.json","khilaf.json","manifest.webmanifest","../quran.json","../warsh.woff2","../icon-180.png","../icon-192.png","../icon-512.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()))});

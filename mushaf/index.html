@@ -351,7 +351,7 @@ show=function(p,flash){_show(p,flash);if(!TH.length||!BX[cur])return;
 // --- رابط الشروح من البيت
 const _go=go;
 go=function(n){_go(n);let l=document.getElementById('shl');if(!l){l=document.createElement('a');l.id='shl';l.className='shl';l.target='_blank';l.rel='noopener';document.getElementById('chips').before(l)}
-  l.href='https://khaledkadoum86-sudo.github.io/mawrid/#v='+(n>1000?'i:'+(n-1000):'m:'+n);l.textContent='📚 البيت '+(n>1000?'من الإعلان '+AR(n-1000):AR(n))+' وشروحه (دليل الحيران، التبيان، فتح المنان، الطراز) في تطبيق «مورد الظمآن» ↗';l.style.display='block'};
+  const vid=(n>1000?'i:'+(n-1000):'m:'+n);l.href=window.MAWRID_NATIVE?'mawrid://verse?id='+vid:'https://khaledkadoum86-sudo.github.io/mawrid/#v='+vid;l.textContent='📚 البيت '+(n>1000?'من الإعلان '+AR(n-1000):AR(n))+' وشروحه (دليل الحيران، التبيان، فتح المنان، الطراز) في تطبيق «مورد الظمآن» ↗';l.style.display='block'};
 // --- أزرار الرأس
 const hd=document.querySelector('header');
 [['التجزئة',()=>tajPanel()],['تصحيح لوح',lawhPanel],['★ محفوظاتي',bmPanel]].forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;hd.appendChild(b)});
