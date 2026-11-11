@@ -84,6 +84,7 @@ main{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
   <label>صفحة <input id="pg" type="number" min="1" max="604" value="1"></label>
   <input id="q" placeholder="ابحث عن كلمة" style="width:130px">
   <button id="mbtn">مورد الظمآن</button>
+  <button id="ibtn">الإعلان</button>
   <button id="dl" title="حفظ المصحف كاملًا في الجهاز للعمل دون إنترنت">⤓ حفظ للعمل دون إنترنت</button>
 </header>
 <main id="main">
@@ -190,6 +191,7 @@ document.getElementById('ipv').onclick=()=>{curN=null;showImg(ipg-1,null)};
 mode=store.get('mmode')||'img';
 document.getElementById('back').onclick=()=>document.getElementById('mw').classList.remove('on');
 document.getElementById('mbtn').onclick=()=>openM(null);
+document.getElementById('ibtn').onclick=()=>{openM(null);document.getElementById('mwt').textContent='الإعلان بتكميل مورد الظمآن';if(mode==='img')showImg(50,null);else{const e=document.getElementById('b1001');e&&e.scrollIntoView({block:'start'})}};
 document.getElementById('pg').onchange=e=>show(+e.target.value);
 // البحث
 const HAR=/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g;
