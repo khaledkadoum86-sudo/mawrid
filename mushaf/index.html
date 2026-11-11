@@ -317,7 +317,7 @@ function lawhPanel(){
 }
 // --- التجزئة
 const nm2=s=>s.replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه');
-function tajPanel(){
+let tajPanel=function(){
   const b=panel('التجزئة: الأجزاء والأحزاب والأثمان',`<input id="tq" class="tq" placeholder="رقم الحزب، أو «جزء ٥»، أو كلمات من أول الثمن"><div id="tl"></div>`);
   const draw=v=>{v=(v||'').trim();const dig=v.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));const num=+(dig.match(/\d+/)||[0])[0];
     const isJ=/جز/.test(v);const txt=nm2(v.replace(/[\d٠-٩]/g,'').replace(/جزء|الجزء|حزب|الحزب/g,'').trim());
@@ -354,7 +354,7 @@ go=function(n){_go(n);let l=document.getElementById('shl');if(!l){l=document.cre
   l.href='https://khaledkadoum86-sudo.github.io/mawrid/#v='+(n>1000?'i:'+(n-1000):'m:'+n);l.textContent='📚 البيت '+(n>1000?'من الإعلان '+AR(n-1000):AR(n))+' وشروحه (دليل الحيران، التبيان، فتح المنان، الطراز) في تطبيق «مورد الظمآن» ↗';l.style.display='block'};
 // --- أزرار الرأس
 const hd=document.querySelector('header');
-[['التجزئة',tajPanel],['تصحيح لوح',lawhPanel],['★ محفوظاتي',bmPanel]].forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;hd.appendChild(b)});
+[['التجزئة',()=>tajPanel()],['تصحيح لوح',lawhPanel],['★ محفوظاتي',bmPanel]].forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;hd.appendChild(b)});
 </script>
 <style>
 #pn{position:fixed;inset:0;background:var(--paper);display:none;flex-direction:column;z-index:9;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
@@ -390,6 +390,60 @@ details{border-bottom:1px solid #e7dcc3;padding:2px 0}summary{cursor:pointer}
 .okk{color:#1c6a2a;font-weight:bold}.bad{color:#9a1c1c;font-weight:bold}.big{font-size:48px;color:var(--teal);margin:20px}
 .shl{display:none;background:#fff7e3;color:#5a3d0a;padding:5px 10px;font-size:14px;text-decoration:none;border-bottom:1px solid var(--line)}
 </style>
+<script>
+// ===== الخلاف في أوائل الأحزاب والأثمان =====
+let KH={};fetch('khilaf.json').then(r=>r.ok?r.json():{}).then(j=>KH=j||{}).catch(()=>{});
+const KHL=()=>{try{return JSON.parse(store.get('kh')||'{}')}catch(e){return{}}};
+const setKHL=o=>store.set('kh',JSON.stringify(o));
+const KLBL=['عند جمهور المغاربة','عند بعض المغاربة','عند أهل المغرب الأقصى','عند أهل الجزائر','عند أهل تونس','عند أهل ليبيا','عند أهل شنقيط','عند المشارقة'];
+function khOf(t){return [...(KH[t]||[]).map(x=>({...x,fix:1})),...(KHL()[t]||[])]}
+function khHtml(t){const L=khOf(t);if(!L.length)return'';
+  return '<div class="khl">'+L.map((x,k)=>{const ai=(x.s&&x.a)?aIdx(x.s,x.a):null;const pg=ai!=null?Q.a[ai][3]:null;
+    return `<div class="khi">◆ <b>${E(x.lbl)}</b>${x.s&&x.a?`: يبدأ ${pg?`<a class="jmp" data-p="${pg}">`:''}من ${E(Q.n[x.s-1])} ${AR(x.a)}${pg?` · ص${AR(pg)}</a>`:''}`:''}${x.note?` — ${E(x.note)}`:''}${x.fix?'':` <button class="mini khdel" data-t="${t}" data-k="${k-(KH[t]||[]).length}">حذف</button>`}</div>`}).join('')+'</div>'}
+function khForm(t,host){
+  const so=Q.n.map((n,i)=>`<option value="${i+1}">${AR(i+1)}. ${E(n)}</option>`).join('');
+  host.innerHTML=`<div class="khf"><div>القول: <select class="kl">${KLBL.map(l=>`<option>${l}</option>`).join('')}<option value="">— أخرى (اكتبها في التعليق) —</option></select></div>
+   <div>يبدأ الثمن عندهم من: <select class="ks"><option value="">—</option>${so}</select> الآية <input class="ka" type="number" min="1" style="width:64px"></div>
+   <div><input class="kn" placeholder="تعليق (اختياري): مثلًا من قوله تعالى ﴿…﴾"></div>
+   <button class="g ksv">حفظ</button> <button class="mini kcx">إلغاء</button></div>`;
+  host.querySelector('.kcx').onclick=()=>host.innerHTML='';
+  host.querySelector('.ksv').onclick=()=>{const o=KHL();const s=+host.querySelector('.ks').value||0,a=+host.querySelector('.ka').value||0;
+    if(s&&a&&aIdx(s,a)==null){alertBox(host,'رقم الآية غير موجود في هذه السورة');return}
+    (o[t]=o[t]||[]).push({lbl:host.querySelector('.kl').value||'قول آخر',s,a,note:host.querySelector('.kn').value.trim()});setKHL(o);redrawTaj()}}
+function alertBox(h,m){let e=h.querySelector('.bad');if(!e){e=document.createElement('p');e.className='bad';h.appendChild(e)}e.textContent=m}
+let redrawTaj=()=>{};
+document.addEventListener('click',e=>{
+  const d=e.target.closest('.khdel');if(d){const o=KHL();o[d.dataset.t].splice(+d.dataset.k,1);if(!o[d.dataset.t].length)delete o[d.dataset.t];setKHL(o);redrawTaj();return}
+  const a=e.target.closest('.khadd');if(a){khForm(+a.dataset.t,document.getElementById('khf'+a.dataset.t));return}
+  if(e.target.id==='khexp'){const t=JSON.stringify(KHL(),null,1);const box=document.getElementById('khbox');box.style.display='block';box.value=t;box.select();
+    try{navigator.clipboard.writeText(t).then(()=>{e.target.textContent='✓ نُسخت، أرسلها لي'})}catch(err){}}
+});
+// إعادة تعريف لوحة التجزئة لتضمين الخلاف
+tajPanel=function(){
+  const b=panel('التجزئة: الأجزاء والأحزاب والأثمان',`<input id="tq" class="tq" placeholder="رقم الحزب، أو «جزء ٥»، أو كلمات من أول الثمن، أو «خلاف»">
+   <p class="note">◆ = موضع فيه خلاف في أوله بين المغاربة. اضغط «✎ خلاف» بجانب أي ثمن لتضيف قولًا آخر بقائله وموضعه.</p><div id="tl"></div>
+   <p class="note"><button class="mini" id="khexp">نسخ ما أضفتُه من الخلاف لإرساله</button></p><textarea id="khbox" style="display:none;width:100%;height:120px;direction:ltr"></textarea>`);
+  let last='';const draw=v=>{last=v=(v||'').trim();const dig=v.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));const num=+(dig.match(/\d+/)||[0])[0];
+    const isJ=/جز/.test(v),onlyK=/خلاف/.test(v);const txt=nm2(v.replace(/[\d٠-٩]/g,'').replace(/جزء|الجزء|حزب|الحزب|خلاف/g,'').trim());
+    let h='';for(let hz=1;hz<=60;hz++){const j=Math.ceil(hz/2);
+      if(num&&!txt&&(isJ?j!==num:hz!==num))continue;
+      const ts=[];for(let k=0;k<8;k++){const t=(hz-1)*8+k;if(txt&&!nm2(TH[t][3]).includes(txt))continue;if(onlyK&&!khOf(t).length)continue;ts.push(t)}
+      if((txt||onlyK)&&!ts.length)continue;
+      const hk=[...Array(8).keys()].some(k=>khOf((hz-1)*8+k).length);
+      if(hz%2===1||(!h.includes('data-j="'+j+'"')))h+=`<div class="jz" data-j="${j}">الجزء ${AR(j)}</div>`;
+      h+=`<details ${num||txt||onlyK?'open':''}><summary><b>الحزب ${AR(hz)}</b>${hk?' <span class="kb">◆ مختلف فيه</span>':''} <span class="qw2">${E(TH[(hz-1)*8][3])}</span> <span class="rg">ص${AR(TH[(hz-1)*8][2])}</span></summary>`+
+        ts.map(t=>`<div class="trow"><a class="jmp" data-p="${TH[t][2]}"><span class="tn">الثمن ${AR(t%8+1)}</span>${khOf(t).length?' <span class="kb">◆</span>':''} <span class="qw2">${E(TH[t][3])}</span> <span class="rg">${E(Q.n[TH[t][0]-1])} ${AR(TH[t][1])} · ص${AR(TH[t][2])}</span></a>${t%2===0?` <button class="mini" data-r="${t/2}">مسائل الربع</button>`:''} <button class="mini khadd" data-t="${t}">✎ خلاف</button>${khHtml(t)}<div id="khf${t}"></div></div>`).join('')+'</details>'}
+    document.getElementById('tl').innerHTML=h||'<p>لا نتيجة</p>'};
+  redrawTaj=()=>draw(last);
+  document.getElementById('tq').oninput=e=>draw(e.target.value);draw('');
+};
+</script>
+<style>
+.kb{color:#9a5a00;font-size:12px;background:#fff1d6;border:1px solid #e6c27a;border-radius:4px;padding:0 5px}
+.khl{margin:2px 18px 4px 0;font-size:14px}.khi{color:#5a3d0a}.khi a{color:var(--teal)}
+.khf{background:#fffdf7;border:1px dashed var(--gold);border-radius:6px;padding:6px 8px;margin:4px 0;font-size:14px}.khf div{margin:4px 0}.khf input.kn{width:100%}
+</style>
 </body>
+
 
 </html>
