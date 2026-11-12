@@ -30,6 +30,7 @@ main{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
 .bx{position:absolute;border-radius:3px}
 .bx.k{cursor:pointer;box-shadow:inset 0 -2px 0 rgba(168,129,47,.55)}
 .bx.k:active,.bx.k:hover{background:rgba(212,180,110,.22)}
+.bx.kd{box-shadow:none;border-bottom:2px dashed rgba(31,110,95,.6)} body.noul .bx.kd{border-bottom:0} body.night .bx.kd{border-bottom-color:rgba(140,210,190,.7)}
 .bx.flash{background:rgba(150,210,140,.45)} .bx.ki{box-shadow:inset 0 -3px 0 rgba(31,78,140,.85);background:rgba(70,120,200,.13)} .bx.ki:active,.bx.ki:hover{background:rgba(70,120,200,.28)} body.noul .bx.ki{box-shadow:none} body.night .bx.ki{box-shadow:inset 0 -3px 0 rgba(130,170,240,.9);background:rgba(130,170,240,.16)}
 .lines{font-family:"Warsh","Amiri",serif;font-size:clamp(15px,4.6vw,27px);line-height:1}
 .ln{display:flex;justify-content:space-between;align-items:center;height:2.05em;white-space:nowrap}
@@ -89,7 +90,7 @@ main{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
 </header>
 <main id="main">
   <div id="res"></div>
-  <div class="hint">الكلمة المسطّرة بخط ذهبي لها شاهد من «مورد الظمآن»؛ اضغط عليها ينقلك إلى بيتها مظلّلًا بالأخضر. والكلمة المظلّلة بالأزرق المسطّرة بخط أزرق مختلف فيها بين المصاحف، تفتح بيتها من «الإعلان».</div>
+  <div class="hint">الكلمة المسطّرة بخط ذهبي لها شاهد من «مورد الظمآن»؛ اضغط عليها ينقلك إلى بيتها مظلّلًا بالأخضر. والكلمة المظلّلة بالأزرق المسطّرة بخط أزرق مختلف فيها بين المصاحف، تفتح بيتها من «الإعلان». والكلمة المسطّرة بخط أخضر متقطّع فيها همز أو نقل، تنقلك إلى بيت ضبطها، ومنه إلى شرحه في «الطراز».</div>
   <div id="view"><div id="load">جارٍ التحميل…</div></div>
 </main>
 <div id="mw">
@@ -102,11 +103,11 @@ main{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
 <script>
 const AR=n=>String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let BX,LAY,Q,M,W,V,PAGES={},cur=1,built=false,mode='img',ipg=8,curN=null;
+let DM={},BX,LAY,Q,M,W,V,PAGES={},cur=1,built=false,mode='img',ipg=8,curN=null;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const toks=t=>t.replace(/[\s ٠-٩]+/g,' ').split(/\s+/).filter(x=>x&&/[ء-ي]/.test(x));
-Promise.all(['../quran.json','mawrid.json','wmap.json','vmap.json','boxes.json'].map(f=>fetch(f).then(r=>r.json()))).then(([q,m,w,v,l])=>{
-  Q=q;M=m;W=w;V=v;BX=l;
+Promise.all(['../quran.json','mawrid.json','wmap.json','vmap.json','boxes.json','dmap.json'].map(f=>fetch(f).then(r=>r.json()).catch(()=>({})))).then(([q,m,w,v,l,dm])=>{
+  Q=q;M=m;W=w;V=v;BX=l;DM=dm||{};
   Q.a.forEach(([s,a,t,p])=>{(PAGES[p]=PAGES[p]||[]).push([s,a,t])});
   const sel=document.getElementById('sel');
   const first={};Q.a.forEach(([s,a,t,p])=>{if(!(s in first))first[s]=+p});
@@ -120,8 +121,8 @@ function show(p,flash){
   document.getElementById('pg').value=p;
   const bx=BX[p]||[];const sn=bx.length?Q.a[bx[0][0]][0]:1;
   let h=`<div class="page qpage"><div class="pinfo"><span>${E(Q.n[sn-1])}</span><span>${AR(p)}</span></div><div class="qwrap" style="aspect-ratio:${p<3?'1 / 1':'900 / 1435'}"><img class="qimg" id="qimg" src="qp/${p}.png" alt="صفحة ${p}" decoding="async">`;
-  for(const [ai,ti,x1,y1,x2,y2] of bx){const [s,a]=Q.a[ai];const k=W[s+':'+a]&&W[s+':'+a][ti];const ki=k&&k.some(n=>n>1000);
-    h+=`<span class="bx${k?' k':''}${ki?' ki':''}" data-s="${s}" data-a="${a}" data-i="${ti}" style="left:${x1/10}%;top:${y1/10}%;width:${(x2-x1)/10}%;height:${(y2-y1)/10}%"></span>`;}
+  for(const [ai,ti,x1,y1,x2,y2] of bx){const [s,a]=Q.a[ai];const k0=W[s+':'+a]&&W[s+':'+a][ti];const kd=DM[s+':'+a]&&DM[s+':'+a][ti];const k=k0||kd;const ki=k0&&k0.some(n=>n>1000);
+    h+=`<span class="bx${k?' k':''}${!k0&&kd?' kd':''}${ki?' ki':''}" data-s="${s}" data-a="${a}" data-i="${ti}" style="left:${x1/10}%;top:${y1/10}%;width:${(x2-x1)/10}%;height:${(y2-y1)/10}%"></span>`;}
   h+=`</div></div><div class="nav"><button class="g" onclick="show(cur+1)">الصفحة التالية ←</button><button class="g" onclick="show(cur-1)">→ الصفحة السابقة</button></div>`;
   document.getElementById('view').innerHTML=h;
   [p+1,p-1,p+2].forEach(x=>{if(x>=1&&x<=604){const i=new Image();i.src='qp/'+x+'.png'}});
@@ -182,7 +183,8 @@ function go(n){
 document.getElementById('view').addEventListener('click',e=>{
   const w=e.target.closest('.bx.k');if(!w)return;
   const s=+w.dataset.s,a=+w.dataset.a,i=+w.dataset.i;
-  openM(W[s+':'+a][i].slice().sort((x,y)=>(y>1000)-(x>1000)),TK(Q.a.findIndex(r=>r[0]===s&&r[1]===a)).flatMap(t=>t.parts).find(pt=>pt.ti===i).t,`${Q.n[s-1]} ${AR(a)}`);
+  const ids=((W[s+':'+a]||{})[i]||[]).slice().sort((x,y)=>(y>1000)-(x>1000));for(const n of ((DM[s+':'+a]||{})[i]||[]))if(!ids.includes(n))ids.push(n);
+  openM(ids,TK(Q.a.findIndex(r=>r[0]===s&&r[1]===a)).flatMap(t=>t.parts).find(pt=>pt.ti===i).t,`${Q.n[s-1]} ${AR(a)}`);
 });
 document.getElementById('tImg').onclick=()=>setMode('img');
 document.getElementById('tTxt').onclick=()=>{buildMawrid();setMode('txt')};
