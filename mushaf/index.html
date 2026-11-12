@@ -533,12 +533,51 @@ document.addEventListener('click',e=>{const a=e.target.closest('#shl');if(!a)ret
 {const b=document.createElement('button');b.textContent='📚 الشروح';b.onclick=()=>openMawrid();document.querySelector('header').appendChild(b)}
 </script>
 <style>
+#tzv{position:fixed;inset:0;z-index:21;background:var(--paper);display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+#tzv.on{display:flex}#tzh{background:var(--teal);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;font-weight:bold;font-size:15px}
+#tzbar{display:flex;gap:8px;justify-content:center;padding:6px;border-bottom:1px solid var(--line)}
+#tzc{flex:1;overflow:auto;text-align:center;-webkit-overflow-scrolling:touch}
+#tzi{max-width:100%;height:auto;display:block;margin:0 auto}
+body.night #tzi{filter:invert(1) hue-rotate(180deg) brightness(.92)}
+#tzb{display:none;background:#fff7e3;color:#5a3d0a;padding:5px 10px;font-size:14px;border:0;border-bottom:1px solid var(--line);width:100%;text-align:right;cursor:pointer}
 #mfr{position:fixed;inset:0;z-index:20;background:var(--paper);display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 #mfr.on{display:flex}#mfrh{background:var(--teal);color:#fff;display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-weight:bold}
 #mfri{flex:1;border:0;width:100%}
 #dl{display:none}
 header button{padding:3px 8px;font-size:14px}
 </style>
+<div id="tzv">
+  <div id="tzh"><span id="tzl"></span><button class="g" id="tzx">↩ الرجوع إلى المصحف</button></div>
+  <div id="tzbar"><button class="g" id="tzn">الصفحة التالية</button><button class="g" id="tzp">الصفحة السابقة</button></div>
+  <div id="tzc"><img id="tzi" alt="صفحة من كتاب الطراز"></div>
+</div>
+<script>
+// ===== «الطراز» في ضبط الخراز: صفحات الكتاب الممسوحة لأبيات الضبط (455–608) =====
+const TZP=fetch('tiraz.json').then(r=>r.json()).catch(()=>({}));
+let TZS=0,TZE=0,TZCUR=0;
+const _go3=go;
+go=function(n){_go3(n);
+  let b=document.getElementById('tzb');
+  if(!b){b=document.createElement('button');b.id='tzb';b.type='button';document.getElementById('chips').before(b);
+    b.onclick=()=>openTz(+b.dataset.s,+b.dataset.e)}
+  b.style.display='none';b.dataset.n=n;
+  TZP.then(T=>{const r=T['m:'+n];if(!r||b.dataset.n!=n)return;
+    b.dataset.s=r[0];b.dataset.e=r[1];
+    b.textContent='📜 ضبط هذا البيت في «الطراز» (ص '+AR(r[0])+(r[1]>r[0]?' – '+AR(r[1]):'')+') ↗';b.style.display='block'});
+};
+function openTz(s,e){TZS=s;TZE=e;tzShow(s);document.getElementById('tzv').classList.add('on')}
+function tzShow(p){
+  if(p<TZS||p>TZE)return;TZCUR=p;
+  document.getElementById('tzi').src='../pg/tiraz/'+p+'.png';
+  document.getElementById('tzl').textContent='الطراز · صفحة '+AR(p)+' ('+AR(p-TZS+1)+' من '+AR(TZE-TZS+1)+')';
+  document.getElementById('tzc').scrollTop=0;
+  document.getElementById('tzp').disabled=p<=TZS;
+  document.getElementById('tzn').disabled=p>=TZE;
+}
+document.getElementById('tzp').onclick=()=>tzShow(TZCUR-1);
+document.getElementById('tzn').onclick=()=>tzShow(TZCUR+1);
+document.getElementById('tzx').onclick=()=>document.getElementById('tzv').classList.remove('on');
+</script>
 </body>
 
 
