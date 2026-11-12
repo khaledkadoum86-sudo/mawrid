@@ -536,6 +536,7 @@ document.addEventListener('click',e=>{const a=e.target.closest('#shl');if(!a)ret
 #tzv{position:fixed;inset:0;z-index:21;background:var(--paper);display:none;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 #tzv.on{display:flex}#tzh{background:var(--teal);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 10px;font-weight:bold;font-size:15px}
 #tzbar{display:flex;gap:8px;justify-content:center;padding:6px;border-bottom:1px solid var(--line)}
+#tzparts{text-align:center;padding:4px;font-size:14px}#tzparts:empty{display:none}
 #tzc{flex:1;overflow:auto;text-align:center;-webkit-overflow-scrolling:touch}
 #tzi{max-width:100%;height:auto;display:block;margin:0 auto}
 body.night #tzi{filter:invert(1) hue-rotate(180deg) brightness(.92)}
@@ -548,32 +549,40 @@ header button{padding:3px 8px;font-size:14px}
 </style>
 <div id="tzv">
   <div id="tzh"><span id="tzl"></span><button class="g" id="tzx">↩ الرجوع إلى المصحف</button></div>
-  <div id="tzbar"><button class="g" id="tzn">الصفحة التالية</button><button class="g" id="tzp">الصفحة السابقة</button></div>
+  <div id="tzbar"><button class="g" id="tzn">الصفحة التالية</button><button class="g" id="tzh0">↺ أول شرح البيت</button><button class="g" id="tzp">الصفحة السابقة</button></div>
+  <div id="tzparts"></div>
   <div id="tzc"><img id="tzi" alt="صفحة من كتاب الطراز"></div>
 </div>
 <script>
 // ===== «الطراز» في ضبط الخراز: صفحات الكتاب الممسوحة لأبيات الضبط (455–608) =====
+// tiraz.json: لكل بيت الصفحات التي يُقتبس فيها البيت (أو أجزاؤه إذا فرّقه الشارح)، مراجَعة صفحةً صفحةً على صور الكتاب
 const TZP=fetch('tiraz.json').then(r=>r.json()).catch(()=>({}));
-let TZS=0,TZE=0,TZCUR=0;
+const TZN=789, TZPR=i=>i>=200?i-199:i; // رقم الصفحة في الكتاب المطبوع (صورة 200 = ص 1)
+let TZL=[],TZCUR=0;
 const _go3=go;
 go=function(n){_go3(n);
   let b=document.getElementById('tzb');
   if(!b){b=document.createElement('button');b.id='tzb';b.type='button';document.getElementById('chips').before(b);
-    b.onclick=()=>openTz(+b.dataset.s,+b.dataset.e)}
+    b.onclick=()=>openTz(b.dataset.p.split(',').map(Number))}
   b.style.display='none';b.dataset.n=n;
   TZP.then(T=>{const r=T['m:'+n];if(!r||b.dataset.n!=n)return;
-    b.dataset.s=r[0];b.dataset.e=r[1];
-    b.textContent='📜 ضبط هذا البيت في «الطراز» (ص '+AR(r[0])+(r[1]>r[0]?' – '+AR(r[1]):'')+') ↗';b.style.display='block'});
+    b.dataset.p=r.join(',');
+    b.textContent='📜 شرح هذا البيت في «الطراز» (ص '+r.map(p=>AR(TZPR(p))).join('، ')+') ↗';b.style.display='block'});
 };
-function openTz(s,e){TZS=s;TZE=e;tzShow(s);document.getElementById('tzv').classList.add('on')}
+function openTz(L){TZL=L;
+  document.getElementById('tzparts').innerHTML=L.length>1?'أجزاء البيت: '+L.map(p=>`<button class="g" data-p="${p}">ص ${AR(TZPR(p))}</button>`).join(' '):'';
+  tzShow(L[0]);document.getElementById('tzv').classList.add('on')}
 function tzShow(p){
-  if(p<TZS||p>TZE)return;TZCUR=p;
+  if(p<1||p>TZN)return;TZCUR=p;
   document.getElementById('tzi').src='../pg/tiraz/'+p+'.png';
-  document.getElementById('tzl').textContent='الطراز · صفحة '+AR(p)+' ('+AR(p-TZS+1)+' من '+AR(TZE-TZS+1)+')';
+  document.getElementById('tzl').textContent='الطراز · ص '+AR(TZPR(p))+(TZL.includes(p)?' — هنا يُقتبس البيت':'');
   document.getElementById('tzc').scrollTop=0;
-  document.getElementById('tzp').disabled=p<=TZS;
-  document.getElementById('tzn').disabled=p>=TZE;
+  document.getElementById('tzp').disabled=p<=1;
+  document.getElementById('tzn').disabled=p>=TZN;
+  document.getElementById('tzh0').style.display=p===TZL[0]?'none':'';
 }
+document.getElementById('tzparts').onclick=e=>{const x=e.target.closest('button[data-p]');if(x)tzShow(+x.dataset.p)};
+document.getElementById('tzh0').onclick=()=>tzShow(TZL[0]);
 document.getElementById('tzp').onclick=()=>tzShow(TZCUR-1);
 document.getElementById('tzn').onclick=()=>tzShow(TZCUR+1);
 document.getElementById('tzx').onclick=()=>document.getElementById('tzv').classList.remove('on');
