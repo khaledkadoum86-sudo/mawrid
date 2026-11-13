@@ -552,7 +552,7 @@ function hamzaHTML(raw){
   const items=F.map(x=>x.k).concat("base").filter((k,i,a)=>a.indexOf(k)===i&&HZ_TXT[k]);
   const sec=z=>items.filter(k=>HZ_TXT[k].z===z).sort((a,b)=>HZ_ORDER.indexOf(a)-HZ_ORDER.indexOf(b));
   const one=(k,open)=>{ const x=HZ_TXT[k]; const ids=x.r.filter(id=>byId[id]); const o=F.find(y=>y.k===k)||{}; const here=hzHere(k,o);
-    return `<details class="hzi"${open?" open":""}><summary><b>${x.t}</b><span>${x.d}</span>${here?`<em>${here}</em>`:""}<i>${ids.length===1?"بيت واحد":ids.length===2?"بيتان":ids.length.toLocaleString("ar-EG")+" أبيات"}</i></summary>${ids.map(id=>`<div class="row" data-id="${id}"><div class="vhead"><span class="vnum">${numLabel(byId[id])}</span><span class="vsec">${esc(secOf(byId[id])?secOf(byId[id]).t:"")}</span></div>${baytHTML(byId[id],null,true)}</div>`).join("")}</details>` };
+    return `<details class="hzi"${open?" open":""}><summary><b>${x.t}</b><span>${x.d}</span>${here?`<em>${here}</em>`:""}<i>${ids.length===1?"بيت واحد":ids.length===2?"بيتان":ids.length.toLocaleString("en-US")+" أبيات"}</i></summary>${ids.map(id=>`<div class="row" data-id="${id}"><div class="vhead"><span class="vnum">${numLabel(byId[id])}</span><span class="vsec">${esc(secOf(byId[id])?secOf(byId[id]).t:"")}</span></div>${baytHTML(byId[id],null,true)}</div>`).join("")}</details>` };
   const rs=sec("r"), ds=sec("d");
   let h=`<div class="hz"><h3>الهمز في <span class="w">${esc(f.w)}</span></h3>`;
   if(rs.length) h+=`<div class="hzg">في الرسم <small>مورد الظمآن · أحكام رسم الهمز</small></div>`+rs.map((k,i)=>one(k,i===0)).join("");
@@ -569,14 +569,14 @@ function quranHTML(raw){
   const ayat=[]; const seen=new Map();
   for(const [i,j,j2] of hits){ if(!seen.has(i)){ seen.set(i,new Set()); ayat.push(i) } for(let k=j;k<=j2;k++) seen.get(i).add(k) }
   const n=ayat.length;
-  let h=`<div class="mus"><h3>في المصحف <span>رواية ورش · ${hits.length.toLocaleString("ar-EG")} موضعًا في ${n.toLocaleString("ar-EG")} آية</span></h3>`;
+  let h=`<div class="mus"><h3>في المصحف <span>رواية ورش · ${hits.length.toLocaleString("en-US")} موضعًا في ${n.toLocaleString("en-US")} آية</span></h3>`;
   if(r.loose) h+=`<div class="hint" style="margin:2px 0">هكذا رُسمت في المصحف:</div>`;
-  if(r.forms.length>1 || r.loose) h+=`<div class="forms">${r.forms.slice(0,14).map(f=>`<button class="form${QF.form===f.key?" on":""}" data-form="${esc(f.key)}"><span class="w">${esc(f.w)}</span><small>${f.n.toLocaleString("ar-EG")}</small></button>`).join("")}</div>`;
+  if(r.forms.length>1 || r.loose) h+=`<div class="forms">${r.forms.slice(0,14).map(f=>`<button class="form${QF.form===f.key?" on":""}" data-form="${esc(f.key)}"><span class="w">${esc(f.w)}</span><small>${f.n.toLocaleString("en-US")}</small></button>`).join("")}</div>`;
   else h+=`<div class="forms"><span class="form" style="cursor:default"><span class="w">${esc(r.forms[0].w)}</span></span></div>`;
   h+=ayat.slice(0,QF.lim).map(i=>{ const [s,a,t,pg]=Q.data.a[i]; const js=seen.get(i);
     const tx=t.split(" ").map((w,j)=>w.split("\u00a0").map((x,k)=>k?esc(x):`<span class="qw${js.has(j)?" hit":""}" data-s="${esc(x.replace(/[ۖ-ۜ۞۩]/g,""))}">${esc(x)}</span>`).join("\u00a0")).join(" ");
-    return `<div class="aya"><div class="at">${tx}</div><div class="ar">سورة ${esc(Q.data.n[s-1])} · الآية ${a.toLocaleString("ar-EG")} · ص ${(+pg).toLocaleString("ar-EG")}</div></div>` }).join("");
-  if(n>QF.lim) h+=`<button class="more" data-more>عرض ${Math.min(n-QF.lim,40).toLocaleString("ar-EG")} آية أخرى (بقي ${(n-QF.lim).toLocaleString("ar-EG")})</button>`;
+    return `<div class="aya"><div class="at">${tx}</div><div class="ar">سورة ${esc(Q.data.n[s-1])} · الآية ${a.toLocaleString("en-US")} · ص ${(+pg).toLocaleString("en-US")}</div></div>` }).join("");
+  if(n>QF.lim) h+=`<button class="more" data-more>عرض ${Math.min(n-QF.lim,40).toLocaleString("en-US")} آية أخرى (بقي ${(n-QF.lim).toLocaleString("en-US")})</button>`;
   return h+`</div>`;
 }
 document.addEventListener("click",e=>{
@@ -726,7 +726,7 @@ function renderSettings(){
     <div class="it"><div>الإصدار</div><span>${APP_VERSION}</span></div>
   </div>
   ${Object.keys(SH.books).length?`<div class="grp">الشروح دون إنترنت</div>`:""}
-  <div class="set"${Object.keys(SH.books).length?"":" hidden"}>${Object.entries(SH.books).filter(([b,B])=>!B.nodl).map(([b,B])=>`<div class="dl"><div class="tx">${esc(B.t)}<span>${esc(B.a)} · ${B.n.toLocaleString("ar-EG")} صفحة · نحو ${B.mb} م.ب</span></div><button data-dl="${b}">تنزيل</button></div>`).join("")}</div>
+  <div class="set"${Object.keys(SH.books).length?"":" hidden"}>${Object.entries(SH.books).filter(([b,B])=>!B.nodl).map(([b,B])=>`<div class="dl"><div class="tx">${esc(B.t)}<span>${esc(B.a)} · ${B.n.toLocaleString("en-US")} صفحة · نحو ${B.mb} م.ب</span></div><button data-dl="${b}">تنزيل</button></div>`).join("")}</div>
   <div class="set about"><p><b>المحتوى:</b> «مورد الظمآن في رسم أحرف القرآن» و«الذيل في الضبط» لأبي عبد الله محمد بن محمد الشريشي الخرّاز (ت 718هـ)، 608 أبيات؛ و«الإعلان بتكميل مورد الظمآن» لابن عاشر (ت 1040هـ)، 46 بيتًا.</p>
   <p><b>مصدر النص:</b> ملف «مذكرة شرح مورد الظمآن»، مقابَلًا بتحقيق د. أشرف محمد فؤاد طلعت (مكتبة الإمام البخاري، ط2، 1434هـ)، وعلى ترقيمه. الكلمات القرآنية في الأبيات بالأحمر كما في تلك الطبعة.</p>
   ${Object.values(SH.books).map(B=>`<p><b>${esc(B.t)}:</b> ${esc(B.src)}</p>`).join("")}
@@ -739,13 +739,13 @@ function renderSettings(){
 const SH = DATA.sh || {books:{},map:{}};
 // رقم الصفحة المطبوع من رقم صورة الصفحة
 function pr(b,i){ const B=SH.books[b]; let seg=null; for(const s of B.seg) if(i>=s[0]) seg=s; if(!seg) return {t:"",n:null};
-  const n=i-seg[0]+seg[1]; return {n, t:(seg[2]?seg[2]+" · ":"")+"ص "+n.toLocaleString("ar-EG")} }
+  const n=i-seg[0]+seg[1]; return {n, t:(seg[2]?seg[2]+" · ":"")+"ص "+n.toLocaleString("en-US")} }
 function shuruhHTML(v){
   const m=SH.map[v.id]; if(!m) return "";
   const ks=Object.keys(SH.books).filter(b=>m[b]); if(!ks.length) return "";
   return `<div class="grp">الشروح</div><div class="shl">${ks.map(b=>{ const B=SH.books[b], [s,e,g0,g1]=m[b];
     const grp = g1>g0 ? `شرح الأبيات ${g0}–${g1}` : `شرح البيت ${g0}`;
-    const ps=pr(b,s), pe=pr(b,e), ar=x=>x.toLocaleString("ar-EG");
+    const ps=pr(b,s), pe=pr(b,e), ar=x=>x.toLocaleString("en-US");
     const pg = (ps.t || "صفحة "+ar(s)) + (e>s ? " إلى "+ar(ps.t? (pe.n!=null?pe.n:e) : e) : "");
     return `<button class="shb" data-pg="${b}:${s}:${v.id}"><span class="ic">${B.ic}</span><span class="tx"><b>${esc(B.t)}</b><span>${esc(B.a)} · ${grp} · ${pg}</span></span><span class="go">‹</span></button>` }).join("")}</div>
     <div class="shnote">تفتح صفحة الكتاب التي يبدأ فيها شرح البيت، وتقلّب منها إلى ما بعدها.</div>`;
@@ -756,7 +756,7 @@ for(const [id,m] of Object.entries(SH.map)) for(const b in m){ const k=b+":"+m[b
 const VW = {b:null,i:0,from:null};
 function openPage(b,i,from){
   const B=SH.books[b]; i=Math.max(1,Math.min(B.n,i)); VW.b=b; VW.i=i; if(from!==undefined) VW.from=from;
-  $("#vt").textContent=B.t; const p=pr(b,i); $("#vs").textContent= p.t ? p.t+"  ("+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG")+")" : "صفحة "+i.toLocaleString("ar-EG")+" من "+B.n.toLocaleString("ar-EG");
+  $("#vt").textContent=B.t; const p=pr(b,i); $("#vs").textContent= p.t ? p.t+"  ("+i.toLocaleString("en-US")+" من "+B.n.toLocaleString("en-US")+")" : "صفحة "+i.toLocaleString("en-US")+" من "+B.n.toLocaleString("en-US");
   $("#vin").value=(p.n!=null?p.n:i);
   const box=$("#vimg"); box.innerHTML=`<div class="ld">جارٍ تحميل الصفحة…</div>`;
   const img=new Image(); img.alt="صفحة "+i; img.decoding="async";
