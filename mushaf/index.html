@@ -428,7 +428,7 @@ document.addEventListener('click',e=>{
 // إعادة تعريف لوحة التجزئة لتضمين الخلاف
 tajPanel=function(){
   const b=panel('التجزئة: الأجزاء والأحزاب والأثمان',`<input id="tq" class="tq" placeholder="رقم الحزب، أو «جزء ٥»، أو كلمات من أول الثمن، أو «خلاف»">
-   <p class="note">◆ = موضع فيه خلاف بين المغاربة، من بحث «رؤوس الأحزاب وأقسامها» (عن «إعلام الإخوان» للضباع)؛ وأرقام الآيات في التعليق بالعدّ الكوفي كما في الأصل، والانتقال بالعدّ المدني الأخير. اضغط «✎ خلاف» بجانب أي ثمن لتضيف قولًا آخر بقائله وموضعه.</p><div id="tl"></div>
+   <p class="note">◆ = موضع فيه خلاف بين المغاربة، من بحث «رؤوس الأحزاب وأقسامها» (عن «إعلام الإخوان» للضباع)؛ وأرقام الآيات كلها بالعدّ المدني الأخير. اضغط «✎ خلاف» بجانب أي ثمن لتضيف قولًا آخر بقائله وموضعه.</p><div id="tl"></div>
    <p class="note"><button class="mini" id="khexp">نسخ ما أضفتُه من الخلاف لإرساله</button></p><textarea id="khbox" style="display:none;width:100%;height:120px;direction:ltr"></textarea>`);
   let last='';const draw=v=>{last=v=(v||'').trim();const dig=v.replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d));const num=+(dig.match(/\d+/)||[0])[0];
     const isJ=/جز/.test(v),onlyK=/خلاف/.test(v);const txt=nm2(v.replace(/[\d٠-٩]/g,'').replace(/جزء|الجزء|حزب|الحزب|خلاف/g,'').trim());
