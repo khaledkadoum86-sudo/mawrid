@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e5f">
+<title>المصادر والحقوق — مصحف الشواهد</title>
+<style>
+@font-face{font-family:"Amiri";src:url("fonts/amiri-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Amiri";src:url("fonts/amiri-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Maghribi";src:url("fonts/maghribi.woff2") format("woff2");font-display:swap}
+@font-face{font-family:"Warsh";src:url("fonts/warsh.woff2") format("woff2");font-display:swap}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url("fonts/IBMPlexSansArabic-Regular.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Reem Kufi";src:url("fonts/ReemKufi.woff2") format("woff2");font-weight:400 700;font-display:swap}
+
+/* ألوان «مصحف الشواهد» نفسها */
+:root{--gold:#a8812f;--ink:#2a2116;--paper:#fbf7ee;--pg:#fffdf7;--teal:#1f4e5f;--line:#e7dcc3;--muted:#7a6a4a;--band:#f6efdc}
+body.night{--ink:#e8e2d4;--line:#3a4048;--muted:#b9ad90;--band:#2a3036}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Amiri",serif}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+header{position:sticky;top:0;z-index:5;background:var(--teal);color:#fff;padding:8px 12px;display:flex;align-items:center;gap:8px}
+header h1{font-size:17px;margin:0;font-weight:700;flex:1}
+header button{font-family:"Amiri",serif;font-size:15px;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;background:#fff;color:var(--teal)}
+main{max-width:760px;margin:0 auto;padding:12px 12px 40px}
+.page{background:var(--pg);border:1px solid var(--line);border-radius:10px;box-shadow:0 1px 4px #0001;padding:18px 18px 14px;margin:12px 0}
+.open{text-align:center;padding-top:22px}
+.bsm{font-family:"Maghribi","Amiri",serif;font-size:27px;color:var(--teal);margin:0}
+.slw{font-family:"Maghribi","Amiri",serif;font-size:18px;color:var(--gold);margin:6px 0 14px}
+.ttl{font-family:"Maghribi","Amiri",serif;font-size:32px;color:var(--teal);margin:6px 0 2px}
+.sub{color:var(--muted);font-size:16px;margin:0}
+h2{font-size:20px;color:var(--teal);margin:0 0 10px;padding:3px 12px;border:1.5px solid var(--gold);border-radius:8px;background:var(--band);text-align:center}
+body.night h2{color:#cfe3ea}
+p{font-size:18px;line-height:1.9;margin:6px 0}
+.note{font-size:16px;color:var(--muted)}
+.n{color:var(--gold);font-weight:700}
+/* الكتب */
+.bk{display:grid;grid-template-columns:30px 1fr auto;column-gap:10px;align-items:baseline;padding:8px 4px;border-bottom:1px dotted var(--line)}
+.bk:last-of-type{border-bottom:0}
+.bk .i{color:var(--gold);font-size:15px}
+.bk .t{font-size:19px;font-weight:700;color:var(--teal)}
+body.night .bk .t{color:#cfe3ea}
+.bk .a{grid-column:2;font-size:16.5px;line-height:1.7}
+.bk .d{grid-column:3;grid-row:1/span 2;align-self:center;white-space:nowrap;font-size:15px;color:var(--gold);border:1px solid var(--line);border-radius:14px;padding:1px 10px}
+@media(max-width:520px){.bk{grid-template-columns:26px 1fr}.bk .d{grid-column:2;grid-row:auto;justify-self:start;margin-top:3px}}
+/* المصحف */
+.q{font-family:"Warsh","Amiri",serif;font-size:26px;text-align:center;line-height:2;color:var(--ink);margin:4px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:17.5px;line-height:1.8}
+.kv b{color:var(--gold);font-weight:700}
+/* الخطوط */
+table{width:100%;border-collapse:collapse;font-size:16.5px}
+th,td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:right;vertical-align:middle}
+th{color:var(--gold);font-weight:700;font-size:15px}
+td.s{font-size:21px;white-space:nowrap}
+.lic{display:inline-block;border-radius:12px;padding:0 9px;font-size:14px;border:1px solid var(--gold);color:var(--gold)}
+.lic.k{border-color:var(--teal);color:var(--teal)}
+body.night .lic.k{border-color:#8fc0cf;color:#8fc0cf}
+/* الإعداد */
+.prep{text-align:center;font-size:21px;line-height:1.9;margin:4px 0}
+.prep b{color:var(--teal)}
+body.night .prep b{color:#cfe3ea}
+/* رسالة Apple */
+details{border:1px dashed var(--line);border-radius:8px;padding:6px 10px}
+summary{cursor:pointer;color:var(--teal);font-size:17px}
+body.night summary{color:#cfe3ea}
+.en{direction:ltr;text-align:left;font-family:-apple-system,"Helvetica Neue",Arial,sans-serif;font-size:14.5px;line-height:1.6;white-space:pre-wrap;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:10px;margin:8px 0;color:var(--ink);user-select:text;-webkit-user-select:text}
+.cp{font-family:"Amiri",serif;font-size:15px;border:none;border-radius:6px;padding:4px 14px;cursor:pointer;background:var(--gold);color:#fff}
+/* الختام */
+.close{text-align:center}
+.close .cl{font-family:"Maghribi","Amiri",serif;font-size:20px;color:var(--teal);margin:4px 0 10px}
+body.night .close .cl,body.night .bsm,body.night .ttl{color:#cfe3ea}
+.seal{display:flex;justify-content:center;align-items:center;gap:22px;flex-wrap:wrap}
+.seal img.logo{width:92px;height:92px}
+.seal img.sig{width:74px;height:auto}
+body.night .seal img{filter:brightness(1.25)}
+.date{color:var(--muted);font-size:15px;margin-top:6px}
+</style>
+<style>#apple{display:none!important}</style></head>
+<body>
+<header>
+  <button id="back" type="button" hidden>رجوع</button>
+  <h1>المصادر والحقوق</h1>
+</header>
+<main>
+
+  <section class="page open">
+    <p class="bsm">ﺑﺴﻢ ﺍﻟﻠﻪ ﺍﻟﺮﺣﻤﻦ ﺍﻟﺮﺣﻴﻢ</p>
+    <p class="slw">ﺍﻟﻠﻬﻢ ﺻﻞ ﻋﻠﻰ ﺳﻴﺪﻧﺎ ﻣﺤﻤﺪ ﻭﺀﺍﻟﻪ ﺍﻷﻛﺮﻣﻴﻦ</p>
+    <p class="ttl">ﺍﻟﻤﺼﺎﺩﺭ ﻭﺍﻟﺤﻘﻮﻕ</p>
+    <p class="sub">تطبيق «مصحف الشواهد» — شواهد الرسم والضبط برواية ورش</p>
+  </section>
+
+  <section class="page">
+    <h2>الكتب ومؤلفوها</h2>
+    <div class="bk"><span class="i">1</span><span class="t">مورد الظمآن في رسم أحرف القرآن</span><span class="a">أبو عبد الله محمد بن محمد بن إبراهيم الأموي الشريشي، الشهير بالخرّاز</span><span class="d">ت 718هـ / 1318م</span></div>
+    <div class="bk"><span class="i">2</span><span class="t">الإعلان بتكميل مورد الظمآن</span><span class="a">أبو محمد عبد الواحد بن أحمد بن عاشر الأنصاري الفاسي</span><span class="d">ت 1040هـ / 1631م</span></div>
+    <div class="bk"><span class="i">3</span><span class="t">الطراز في شرح ضبط الخرّاز</span><span class="a">أبو عبد الله محمد بن عبد الله بن عبد الجليل التنسي التلمساني</span><span class="d">ت 899هـ / 1494م</span></div>
+    <div class="bk"><span class="i">4</span><span class="t">فتح المنان المرويّ بمورد الظمآن</span><span class="a">أبو محمد عبد الواحد بن عاشر الأنصاري الفاسي</span><span class="d">ت 1040هـ / 1631م</span></div>
+    <div class="bk"><span class="i">5</span><span class="t">التبيان في شرح مورد الظمآن</span><span class="a">أبو محمد عبد الله بن عمر الصنهاجي، ابن آجطّا</span><span class="d">كان حيًّا سنة 750هـ</span></div>
+    <div class="bk"><span class="i">6</span><span class="t">دليل الحيران على مورد الظمآن</span><span class="a">إبراهيم بن أحمد المارغني التونسي</span><span class="d">ت 1349هـ / 1930م</span></div>
+    <div class="bk"><span class="i">7</span><span class="t">تنبيه الخلّان على الإعلان بتكميل مورد الظمآن</span><span class="a">إبراهيم بن أحمد المارغني التونسي</span><span class="d">ت 1349هـ / 1930م</span></div>
+    <p class="note">نصوص هذه الكتب من الأصول التراثية التي هي في الملك العام، ويُعتمد فيها نصّ المؤلف وحده، دون ما أضافه المحققون والناشرون المعاصرون من تعليق أو تخريج.</p>
+  </section>
+
+  <section class="page">
+    <h2>نص القرآن الكريم</h2>
+    <p class="q">اَ۬لرَّحْمَٰنِ اِ۬لرَّحِيمِ</p>
+    <div class="kv">
+      <b>المصدر</b><span>مجمع الملك فهد لطباعة المصحف الشريف، المدينة المنورة</span>
+      <b>الرواية</b><span>ورش عن نافع، من طريق الأزرق</span>
+      <b>الإصدار</b><span>10</span>
+      <b>عدّ الآي</b><span>العدّ المدني الأخير</span>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>الخطوط وتراخيصها</h2>
+    <table>
+      <thead><tr><th>الخط</th><th>نموذج</th><th>الترخيص</th></tr></thead>
+      <tbody>
+        <tr><td>KFGQPC WARSH<br><span class="note">مجمع الملك فهد</span></td><td class="s" style="font-family:'Warsh','Amiri',serif">اِ۬لْحَمْدُ لِلهِ</td><td><span class="lic k">ترخيص المجمع</span><br><span class="note">مجاني، لا يُباع ولا يُعدَّل</span></td></tr>
+        <tr><td>Amiri</td><td class="s" style="font-family:'Amiri',serif">مورد الظمآن</td><td><span class="lic">SIL OFL 1.1</span></td></tr>
+        <tr><td>IBM Plex Sans Arabic</td><td class="s" style="font-family:'IBM Plex Sans Arabic',sans-serif;font-size:18px">مورد الظمآن</td><td><span class="lic">SIL OFL 1.1</span></td></tr>
+        <tr><td>Reem Kufi</td><td class="s" style="font-family:'Reem Kufi',sans-serif;font-size:19px">مورد الظمآن</td><td><span class="lic">SIL OFL 1.1</span></td></tr>
+        <tr><td>Omniversify Maghrib</td><td class="s" style="font-family:'Maghribi','Amiri',serif">ﻣﻮﺭﺩ ﺍﻟﻈﻤﺂﻥ</td><td><span class="lic">SIL OFL 1.1</span></td></tr>
+      </tbody>
+    </table>
+    <p class="note">رخصة SIL Open Font License 1.1 تبيح استعمال الخط وتضمينه في التطبيقات مجانًا، مع إرفاق نص الرخصة.</p>
+  </section>
+
+  <section class="page">
+    <h2>الإعداد</h2>
+    <p class="prep">الجمع والربط والإعداد من عمل:<br><b>خالد قدوم التيهرتي السنوسي الجزائري</b></p>
+    <p class="note" style="text-align:center">أستاذ التعليم القرءاني — المدرسة القرءانية النموذجية، مسجد القطب الأمير عبد القادر، قسنطينة</p>
+  </section>
+
+  <section class="page" id="apple">
+    <h2>رسالة مراجعة Apple</h2>
+    <details>
+      <summary>نص خانة App Review Information (بالإنجليزية)</summary>
+<div class="en" id="enmsg">Hello App Review Team,
+
+"Mushaf al-Shawahid" (مصحف الشواهد) is a free educational app for students and teachers of the Quran. It shows the Mushaf in the Warsh reading and links each word to the verses of the classical didactic poem "Mawrid al-Zam'an" on Quranic orthography (rasm) and diacritical marking (dabt), with the classical commentaries on it.
+
+Content and rights:
+- The classical texts were written by scholars who died centuries ago: al-Kharraz (d. 1318), al-Tanasi (d. 1494), Ibn Ajatta (14th century), Ibn Ashir (d. 1631) and al-Marghini (d. 1930). These works are in the public domain. Only the authors' own text is used, without the notes of modern editors.
+- The Quran text (Warsh, version 10) and the KFGQPC Warsh font come from the King Fahd Glorious Quran Printing Complex, which provides them free of charge. They are used unmodified and are not sold.
+- All other fonts (Amiri, IBM Plex Sans Arabic, Reem Kufi, Omniversify Maghrib) are under the SIL Open Font License 1.1; the license texts are included in the app.
+- A "Sources and Rights" page inside the app lists every book, author and license.
+
+Privacy: the app is free, has no ads, no in-app purchases, no account or login, and collects no personal data. Settings and saved items stay on the device only.
+
+No login is required to review the app; all content is available from the first launch, including offline.
+
+The app was compiled and prepared by Khaled Kadoum, a Quran teacher at the Model Quranic School, Emir Abdelkader Mosque, Constantine, Algeria.
+
+Thank you.</div>
+      <button class="cp" id="cpbtn" type="button">نسخ النص</button>
+    </details>
+  </section>
+
+  <section class="page close">
+    <p class="cl">ﻭﺻﻠﻰ ﺍﻟﻠﻪ ﻋﻠﻰ ﺳﻴﺪﻧﺎ ﻣﺤﻤﺪ ﻭﺀﺍﻟﻪ ﺍﻷﻛﺮﻣﻴﻦ</p>
+    <div class="seal">
+      <img class="logo" src="logo.png" alt="شعار الصلاة على رسول الله وءاله">
+      <img class="sig" src="signature.png" alt="توقيع خالد قدوم">
+    </div>
+    <p class="date">خالد قدوم التيهرتي السنوسي الجزائري — قسنطينة، 20 نوفمبر 2026</p>
+  </section>
+
+</main>
+<script>
+// يتبع مظهر التطبيق (المفتاح «set» نفسه في localStorage)
+(function(){
+  var T={cream:['#fbf7ee','#fffdf7'],white:['#f4f4f4','#ffffff'],beige:['#efe3c6','#f6ecd2'],green:['#e3eee1','#eef6ec'],blue:['#e2ebf2','#eef4f9'],night:['#15191d','#1f2429']};
+  var th='cream';
+  try{var s=JSON.parse(localStorage.getItem('set')||'{}');if(s&&T[s.theme])th=s.theme;}catch(e){}
+  var t=T[th],r=document.documentElement.style;
+  r.setProperty('--paper',t[0]);r.setProperty('--pg',t[1]);
+  document.body.classList.toggle('night',th==='night');
+})();
+// زر الرجوع عند فتح الصفحة من داخل التطبيق
+(function(){
+  var b=document.getElementById('back');
+  if(history.length>1){b.hidden=false;b.onclick=function(){history.back()};}
+})();
+// نسخ الرسالة الإنجليزية
+document.getElementById('cpbtn').onclick=function(){
+  var el=document.getElementById('enmsg'),txt=el.innerText,btn=this;
+  function ok(){btn.textContent='نُسخ ✓';setTimeout(function(){btn.textContent='نسخ النص'},2000)}
+  function fb(){var rg=document.createRange();rg.selectNodeContents(el);var sl=getSelection();sl.removeAllRanges();sl.addRange(rg);try{document.execCommand('copy');ok()}catch(e){}}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,fb)}else fb();
+};
+</script>
+</body>
+</html>
