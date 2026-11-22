@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="مصحف الشواهد"><link rel="apple-touch-icon" href="icon-180.png"><meta name="theme-color" content="#1f4e5f">
 <title>مصحف الشواهد — شواهد الرسم والضبط برواية ورش</title>
-<style>@font-face{font-family:"Amiri";src:url("amiri-Regular.woff2") format("woff2");font-weight:400;font-display:swap}@font-face{font-family:"Amiri";src:url("amiri-Bold.woff2") format("woff2");font-weight:700;font-display:swap}</style>
+<style>@font-face{font-family:"Amiri";src:url("amiri-Regular.woff2") format("woff2");font-weight:400;font-display:swap}@font-face{font-family:"Amiri";src:url("amiri-Bold.woff2") format("woff2");font-weight:700;font-display:swap}body.noimg #tImg,body.noimg #s_img{display:none!important}</style>
 <style>
 @font-face{font-family:"Warsh";src:url("../warsh.woff2") format("woff2");font-display:swap}
 :root{--gold:#a8812f;--ink:#2a2116;--paper:#fbf7ee;--teal:#1f4e5f;--hl:#d3ecce;--line:#e7dcc3}
@@ -198,6 +198,8 @@ document.getElementById('tTxt').onclick=()=>{buildMawrid();setMode('txt')};
 document.getElementById('inx').onclick=()=>{curN=null;showImg(ipg+1,null)};
 document.getElementById('ipv').onclick=()=>{curN=null;showImg(ipg-1,null)};
 mode=store.get('mmode')||'img';
+// إن لم توجد الصفحات المصوّرة (محذوفة من النسخة المنشورة بقرار 21 نوفمبر 2026) يُخفى زرها ويُعرض النص
+(function(){const t=new Image();t.onload=()=>document.body.classList.remove('noimg');t.onerror=()=>{document.body.classList.add('noimg');if(mode==='img'){mode='txt';store.set('mmode','txt');if(document.getElementById('mw').classList.contains('img'))setMode('txt')}};t.src='mp/8.jpg';})();
 document.getElementById('back').onclick=()=>document.getElementById('mw').classList.remove('on');
 document.getElementById('mbtn').onclick=()=>openM(null);
 document.getElementById('ibtn').onclick=()=>{openM(null);document.getElementById('mwt').textContent='الإعلان بتكميل مورد الظمآن';if(mode==='img')showImg(50,null);else{const e=document.getElementById('b1001');e&&e.scrollIntoView({block:'start'})}};
