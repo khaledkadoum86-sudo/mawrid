@@ -851,7 +851,7 @@ function printDoc(title,sub,bodyHtml){
   pages.forEach((L,k)=>{const sc=document.createElement('section');sc.className='pg body';sc.innerHTML=`<img class="wm" src="${SIG()}" alt=""><div class="inner">${L.join('')}</div><div class="pno">${AR(k+1)}</div>`;P.appendChild(sc)});
   const z=Math.min(1,(window.innerWidth-12)/794);P.querySelectorAll('.pg').forEach(p=>p.style.zoom=z);window.scrollTo(0,0);document.body.scrollTop=0;
   document.getElementById('prx').onclick=()=>{document.body.classList.remove('printing');pv.innerHTML=''};
-  document.getElementById('prgo').onclick=()=>{try{if(window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.print){webkit.messageHandlers.print.postMessage(title);return}}catch(e){}if(window.MAWRID_NATIVE){const n=document.querySelector('.prbar .note');n.innerHTML='<b style="color:#ffe9a8">الطباعة من داخل التطبيق تعمل بعد تثبيت تحديثه من Xcode. وإلى ذلك الحين افتح «مصحف الشواهد» في سفاري واطبع منه.</b>';return}window.print()};
+  document.getElementById('prgo').onclick=()=>{try{if(window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.print){webkit.messageHandlers.print.postMessage(title);return}}catch(e){}if(window.MAWRID_NATIVE){const n=document.querySelector('.prbar .note');n.innerHTML='<b style="color:#ffe9a8">الطباعة غير متاحة في هذه النسخة من التطبيق.</b>';return}window.print()};
 }
 function printReport(title,sub,html){const t=document.createElement('div');t.innerHTML=html;
   t.querySelectorAll('.qz,.srep,input,button').forEach(x=>{const p=x.closest('p.note');(p&&x.classList.contains('srep')?p:x).remove()});
@@ -892,12 +892,12 @@ function morePanel(){const b=panel('⋯ المزيد',`<div class="mlist">
   <button data-x="ila">📘 «الإعلان بتكميل مورد الظمآن»</button><button data-x="shr">📚 «مورد الظمآن» وشروحه</button>
   <button data-x="rub">📑 مسائل هذا الربع</button><button data-x="bm">★ محفوظاتي وملاحظاتي</button>
   <button data-x="flt">🎨 تمييز الكلمات حسب الباب</button><button data-x="bk">💾 النسخة الاحتياطية</button>
-  <button data-x="share">↗ مشاركة التطبيق وطريقة تثبيته</button>
+  ${window.SHAWAHID_STORE?'':'<button data-x="share">↗ مشاركة التطبيق وطريقة تثبيته</button>'}
   <button data-x="set">⚙ الإعدادات</button></div>`);
   b.querySelectorAll('.mlist button').forEach(x=>x.onclick=()=>{const k=x.dataset.x;
     if(k==='ila'){closeAll();document.getElementById('ibtn').click()}else if(k==='shr'){closeAll();openMawrid()}
     else if(k==='rub'){const rows=BX[cur]||[];rubPanel(Math.floor((rows.length?thumnOf(rows[0][0]):0)/2))}
-    else if(k==='bm')bmPanel();else if(k==='flt')fltPanel();else if(k==='bk')bkPanel();else if(k==='ad')alifPanel();else if(k==='share')location.href='install.html';else if(k==='set')setPanel()})}
+    else if(k==='bm')bmPanel();else if(k==='flt')fltPanel();else if(k==='bk')bkPanel();else if(k==='ad')alifPanel();else if(k==='share'){if(!window.SHAWAHID_STORE)location.href='install.html'}else if(k==='set')setPanel()})}
 {const tb=document.createElement('nav');tb.id='tabs';
   tb.innerHTML=[['mus','📖','المصحف'],['taj','☰','التجزئة'],['mwd','📜','المورد'],['lwh','✎','اللوح'],['flt','🎨','تمييز'],['more','⋯','المزيد']].map(([k,i,t])=>`<button data-k="${k}"><span>${i}</span>${t}</button>`).join('');
   document.body.appendChild(tb);
