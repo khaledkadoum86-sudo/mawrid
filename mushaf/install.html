@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>تثبيت «مصحف الشواهد» على هاتفك</title>
+<title>تثبيت «مصحف الرسم والضبط» على هاتفك</title>
 <meta name="description" content="مصحف ورش تتصل كل كلمة فيه ببيتها من «مورد الظمآن» وبضبطها من «الطراز». ثبّته على الآيفون أو أندرويد مجانًا، ويعمل دون إنترنت.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -64,8 +64,8 @@ footer a{color:var(--teal)}
 <body>
 <main>
   <div class="hero">
-    <img src="icon-180.png" alt="أيقونة مصحف الشواهد">
-    <h1>مصحف الشواهد</h1>
+    <img src="icon-180.png" alt="أيقونة مصحف الرسم والضبط">
+    <h1>مصحف الرسم والضبط</h1>
     <p class="sub">مصحف ورش تتصل كل كلمة فيه ببيتها من «مورد الظمآن» وبضبطها من «الطراز»</p>
   </div>
 
@@ -85,7 +85,7 @@ footer a{color:var(--teal)}
       <li>افتح هذه الصفحة في متصفح <b>Safari</b>. إن فتحتها من واتساب فاضغط ⋯ ثم «فتح في Safari».</li>
       <li>اضغط زر المشاركة <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg> في أسفل الشاشة (وفي الآيباد في أعلاها).</li>
       <li>انزل في القائمة واختر <b>«إضافة إلى الشاشة الرئيسية»</b> <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="1.8" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8v8M8 12h8"/></svg> ثم <b>«إضافة»</b>.</li>
-      <li>تظهر أيقونة «مصحف الشواهد» بين تطبيقاتك، فافتحه منها.</li>
+      <li>تظهر أيقونة «مصحف الرسم والضبط» بين تطبيقاتك، فافتحه منها.</li>
     </ol>
   </div>
 
@@ -95,7 +95,7 @@ footer a{color:var(--teal)}
       <li>افتح هذه الصفحة في متصفح <b>Chrome</b>.</li>
       <li>اضغط زر «ثبّت التطبيق على جهازك» إن ظهر لك أعلاه، أو اضغط قائمة المتصفح <b>⋮</b> في الأعلى.</li>
       <li>اختر <b>«تثبيت التطبيق»</b> أو <b>«إضافة إلى الشاشة الرئيسية»</b>، ثم وافق.</li>
-      <li>تظهر أيقونة «مصحف الشواهد» بين تطبيقاتك، فافتحه منها.</li>
+      <li>تظهر أيقونة «مصحف الرسم والضبط» بين تطبيقاتك، فافتحه منها.</li>
     </ol>
   </div>
 
@@ -117,7 +117,7 @@ footer a{color:var(--teal)}
 
   <div class="card qr">
     <h2>شارك التطبيق</h2>
-    <img src="qr.png" alt="رمز QR لصفحة تثبيت مصحف الشواهد">
+    <img src="qr.png" alt="رمز QR لصفحة تثبيت مصحف الرسم والضبط">
     <p class="note" style="margin:4px 0 0">امسح الرمز بكاميرا الهاتف لفتح هذه الصفحة.</p>
     <button class="btn sec" id="shareBtn">↗ أرسل الرابط (واتساب وغيره)</button>
     <button class="btn sec" id="printBtn">🖨 اطبع ملصقًا فيه الرمز</button>
@@ -135,7 +135,7 @@ footer a{color:var(--teal)}
   <p class="bs">بسم الله الرحمن الرحيم</p>
   <p class="sl">اللهم صل على سيدنا محمد وءاله الأكرمين</p>
   <img class="lg" src="icon-180.png" alt="">
-  <h1>مصحف الشواهد</h1>
+  <h1>مصحف الرسم والضبط</h1>
   <p class="t">مصحف ورش تتصل كل كلمة فيه ببيتها من «مورد الظمآن» وبضبطها من «الطراز» — مجاني، يعمل دون إنترنت، على الآيفون وأندرويد</p>
   <img class="q" src="qr.png" alt="">
   <div class="scan">امسح الرمز بكاميرا هاتفك لتثبيته</div>
@@ -160,13 +160,13 @@ footer a{color:var(--teal)}
   $('installBtn').onclick=async()=>{if(!ev)return;ev.prompt();try{await ev.userChoice}catch(e){}ev=null;$('installBtn').hidden=true};
   addEventListener('appinstalled',()=>{$('installBtn').hidden=true;$('already').hidden=false});
   // المشاركة
-  const text='«مصحف الشواهد»: مصحف ورش تتصل كل كلمة فيه ببيتها من «مورد الظمآن» وبضبطها من «الطراز». مجاني ويعمل دون إنترنت:';
+  const text='«مصحف الرسم والضبط»: مصحف ورش تتصل كل كلمة فيه ببيتها من «مورد الظمآن» وبضبطها من «الطراز». مجاني ويعمل دون إنترنت:';
   $('shareBtn').onclick=async()=>{
-    if(navigator.share){try{await navigator.share({title:'مصحف الشواهد',text,url:URL_});return}catch(e){if(e&&e.name==='AbortError')return}}
+    if(navigator.share){try{await navigator.share({title:'مصحف الرسم والضبط',text,url:URL_});return}catch(e){if(e&&e.name==='AbortError')return}}
     try{await navigator.clipboard.writeText(text+' '+URL_);$('copied').hidden=false}catch(e){}
     location.href='https://wa.me/?text='+encodeURIComponent(text+' '+URL_);
   };
-  $('printBtn').onclick=()=>{try{if(window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.print){webkit.messageHandlers.print.postMessage('ملصق مصحف الشواهد');return}}catch(e){}print()};
+  $('printBtn').onclick=()=>{try{if(window.webkit&&webkit.messageHandlers&&webkit.messageHandlers.print){webkit.messageHandlers.print.postMessage('ملصق مصحف الرسم والضبط');return}}catch(e){}print()};
 })();
 </script>
 </body>
