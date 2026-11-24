@@ -61,6 +61,13 @@ main{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
 .b .n{color:var(--gold);font-size:15px;align-self:center}
 .b .s{text-align:right}.b .a{text-align:left}
 .b.hl{background:var(--hl);box-shadow:inset 0 0 0 1.5px #9fcf98}
+@font-face{font-family:"MawridNaskh";src:url("scheherazade-new-bold.woff2") format("woff2");font-weight:700;font-display:swap}
+#mb{container-type:inline-size}
+.b.lw{display:flex;align-items:baseline;max-width:820px;padding:.3em .15em .3em 0;font-family:MawridNaskh,Amiri,serif;font-weight:700;font-size:min(30px,calc(100cqw/24.75));line-height:1.5;color:#111;border-bottom:0}
+.b.lw .n{flex:0 0 2.5em;font-size:.6em;color:#111;white-space:nowrap;text-align:start;align-self:baseline}
+.b.lw .s,.b.lw .a{flex:1 1 0;display:flex;justify-content:space-between;gap:.22em;white-space:nowrap;min-width:0;text-align:start;padding:0}
+.b.lw .s{margin-inline-start:.2em}.b.lw .a{margin-inline-start:.9em}
+.b.lw .lq{color:#b3121d}.b.lw .lt{color:#1f2d7a}
 @media(max-width:520px){.b{grid-template-columns:30px 1fr;row-gap:0;padding:4px 4px;font-size:clamp(22px,6.3vw,27px)}.b .a{grid-column:2;text-align:left;padding-right:22px}.txt{font-size:24px}#mb{padding-left:4px;padding-right:4px}}
 #mi{flex:1;overflow:auto;padding:8px 6px 30vh;display:none;-webkit-overflow-scrolling:touch}
 #mw.img #mi{display:block}#mw.img #mb{display:none}
@@ -146,15 +153,26 @@ function TK(ai){ if(TKC[ai])return TKC[ai];
   const t=Q.a[ai][2];let ti=0;
   const r=t.split(' ').filter(x=>x).map(tok=>({parts:tok.split(' ').filter(x=>x).map(pt=>/[ء-ي]/.test(pt.replace(/[٠-٩]/g,''))?{t:pt,ti:ti++}:{t:pt,ti:-1})}));
   return TKC[ai]=r;}
+// البيت طبق الأصل من لوحات المتن (24 نوفمبر 2026): النص المشكول والألوان ومدّ الحروف من lawhat.json، في سطر واحد بالخط النسخي الغليظ
+let LWD=null;
+fetch('lawhat.json').then(r=>r.json()).then(j=>{LWD=j;if(built){built=false;buildMawrid();if(curN&&mode!=='img')go(curN)}}).catch(()=>{});
+function lwRow(id,n,s,a){const t=LWD&&LWD.a&&LWD.a[id];
+  return t?`<div class="b lw" id="b${id}"><span class="n">${AR(n)} ـ</span><span class="s">${t[0]}</span><span class="a">${t[1]}</span></div>`
+    :`<div class="b" id="b${id}"><span class="n">${AR(n)}</span><span class="s">${E(s)}</span><span class="a">${E(a)}</span></div>`}
+// البيت الأطول من عمود الشطر يُصغَّر خطه وحده حتى لا يخرج عن السطر
+function lwFit(){const f=()=>document.querySelectorAll('#mb .b.lw').forEach(b=>{b.style.fontSize='';let r=1;b.querySelectorAll('.s,.a').forEach(h=>{if(h.scrollWidth>h.clientWidth+1)r=Math.min(r,h.clientWidth/h.scrollWidth)});
+    if(r<1)b.style.fontSize=(parseFloat(getComputedStyle(b).fontSize)*r*.985)+'px'});
+  requestAnimationFrame(f);if(document.fonts&&document.fonts.load)document.fonts.load('700 20px MawridNaskh').then(f).catch(()=>{})}
+addEventListener('resize',()=>{if(built)lwFit()});
 function buildMawrid(){
   if(built)return;built=true;let h='';
   const secs=M.sm;
   M.m.forEach(([s,a],k)=>{const n=k+1;const sec=secs.find(x=>x.s===n);if(sec)h+=`<div class="sec">${E(sec.t)}</div>`;
-    h+=`<div class="b" id="b${n}"><span class="n">${AR(n)}</span><span class="s">${E(s)}</span><span class="a">${E(a)}</span></div>`});
+    h+=lwRow(n,n,s,a)});
   h+='<div class="sec" style="background:#1f4e5f;color:#fff;text-align:center;font-size:17px">الإعلان بتكميل مورد الظمآن — لابن عاشر</div>';
   M.i.forEach(([s,a],k)=>{const n=k+1;const sec=M.si.find(x=>x.s===n);if(sec)h+=`<div class="sec">${E(sec.t)}</div>`;
-    h+=`<div class="b" id="b${1000+n}"><span class="n">${AR(n)}</span><span class="s">${E(s)}</span><span class="a">${E(a)}</span></div>`});
-  document.getElementById('mb').innerHTML=h;
+    h+=lwRow(1000+n,n,s,a)});
+  document.getElementById('mb').innerHTML=h;lwFit();
 }
 function openM(ids,word,loc){
   buildMawrid();

@@ -1,4 +1,4 @@
-const CACHE = "mawrid-v31";
+const CACHE = "mawrid-v32";
 const PAGES = "mawrid-pages"; // صور صفحات الشروح: لا تُحذف عند التحديث
 const CORE = ["./","index.html","quran.json","warsh.woff2","manifest.webmanifest","icon-180.png","icon-192.png","icon-512.png","fonts/Amiri-Regular.woff2","fonts/Amiri-Bold.woff2","fonts/Amiri-Italic.woff2","fonts/IBMPlexSansArabic-Regular.woff2","fonts/IBMPlexSansArabic-Medium.woff2","fonts/IBMPlexSansArabic-SemiBold.woff2","fonts/IBMPlexSansArabic-Bold.woff2","fonts/ReemKufi.woff2"];
 self.addEventListener("install", e => {
